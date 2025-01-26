@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\VideoHelper;
 use App\Models\User;
 use App\Helpers\UserHelper;
 
@@ -17,6 +18,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         UserHelper::createUsers();
+        VideoHelper::createDefaultVideo();
 
         // User::factory(10)->withPersonalTeam()->create();
 
