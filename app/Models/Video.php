@@ -15,7 +15,7 @@ class Video extends Model
 
     // Indicar que 'published_at' és una data
     protected $casts = [
-        'published_at' => 'datetime', // Això sí que cal per convertir la data correctament
+        'published_at' => 'datetime',
     ];
 
     // Configurar Carbon perquè mostri les dates en català

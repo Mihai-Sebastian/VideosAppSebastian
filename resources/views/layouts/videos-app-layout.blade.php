@@ -39,7 +39,7 @@
         /* Contenidor de vídeo */
         .video-container {
             position: relative;
-            padding-top: 56.25%; /* Relació d’aspecte 16:9 */
+            padding-top: 56.25%;
             overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
@@ -85,19 +85,18 @@
             text-decoration: none;
             font-weight: bold;
             color: white;
-            background: linear-gradient(90deg, #ff4e50, #f9d423); /* Degradat modern */
+            background: linear-gradient(90deg, #ff4e50, #f9d423);
             transition: transform 0.3s ease, background 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .video-navigation a:hover {
-            background: linear-gradient(90deg, #ff3b3b, #f9c300); /* Canvi de degradat */
-            transform: scale(1.05); /* Efecte d'expansió */
+            background: linear-gradient(90deg, #ff3b3b, #f9c300);
+            transform: scale(1.05);
         }
 
-        /* Alineació a la dreta quan només hi ha el botó de vídeo següent */
         .video-navigation .next-video-btn {
-            margin-left: auto; /* Alinea el botó a la dreta si no hi ha botó anterior */
+            margin-left: auto;
         }
 
         /* Peu de pàgina */
