@@ -88,3 +88,27 @@ Per iniciar el projecte, es va crear un nou projecte Laravel amb el nom `VideosA
     - S'ha afegit Larastan per a l'anàlisi estàtica del codi.
     - S'han corregit els errors detectats per aquesta eina.
 
+## Sprint 3
+
+## Descripció del Sprint
+
+Durant aquest sprint, s'han realitzat diverses tasques clau per millorar la funcionalitat i seguretat de l'aplicació. Aquí es detallen els canvis més importants:
+
+### 1. **Gestió de vídeos**
+S'ha implementat la gestió de vídeos en una vista protegida, accessible només per usuaris amb el permís adequat. Això inclou:
+- Un controlador `VideosManageController`amb la funció `manage` (per gestionar vídeos).
+- Les rutes de gestió de vídeos estan protegides per middleware d'autenticació i control de permisos.
+- Les funcions de la vista i la ruta s'han integrat amb permisos usant el package `spatie/laravel-permission`.
+
+### 2. **Creació d'usuaris amb rols i permisos**
+S'han afegit rols personalitzats com "superadmin" i "video_manager", amb permisos específics:
+- Els superadmins i videos_manager tenen accés complet a la gestió de vídeos.
+- Els usuaris regulars no poden gestionar vídeos, i se'ls denega l'accés.
+- S'han creat proves per verificar que només els usuaris amb els permisos correctes poden accedir a les funcionalitats de gestió de vídeos.
+
+### 3. **Millores a la seguretat**
+S'han millorat les funcionalitats de seguretat per garantir que les rutes protegides siguin accessibles només per usuaris autenticats amb permisos adequats. També s'ha implementat la protecció contra usuaris no autenticats i aquells que no tenen els permisos corresponents.
+
+### 4. **Testos d'unitat i de funcionalitat**
+S'han afegit proves automatitzades per verificar el correcte funcionament dels permisos i rols dels usuaris, així com la capacitat de gestionar vídeos segons el rol assignat.
+

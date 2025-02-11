@@ -2,52 +2,88 @@
 
 namespace App\Helpers;
 
-use App\Models\User;
 use App\Models\Team;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\Models\Permission;
+use Tests\TestCase;
 
-class UserHelper
+class UserHelper extends TestCase
 {
-    public static function createUsers()
+    public static function create_regular_user()
     {
-        $userData = config('users.default_user');
-        $userTeamData = config('users.default_user_Team');
-        $professorData = config('users.default_professor');
-        $professorTeamData = config('users.default_professor_Team');
-
         $user = User::create([
-            'id' => $userData['id'],
-            'name' => $userData['name'],
-            'email' => $userData['email'],
-            'password' => Hash::make($userData['password']),
-            'current_team_id' => $userData['current_team_id'],
+            'name' => 'Regular',
+            'email' => 'regular@videosapp.com',
+            'password' => bcrypt('123456789'),
+            'current_team_id' => null,
         ]);
 
-        $user_team = Team::create([
-            'id' => $userTeamData['id'],
-            'user_id' => $userData['id'],
-            'name' => $userTeamData['name'],
-            'personal_team' => $userTeamData['personal_team'],
+        $team = self::add_personal_team($user);
+        $user->update(['current_team_id' => $team->id]);
+        $user->save();
+
+        return $user;
+    }
+
+    public static function create_video_manager_user()
+    {
+        $user = User::create([
+            'name' => 'Video Manager',
+            'email' => 'videosmanager@videosapp.com',
+            'password' => bcrypt('123456789'),
+            'current_team_id' => null,
+        ]);
+        $user->save();
+
+        $team = self::add_personal_team($user);
+        $user->update(['current_team_id' => $team->id]);
+        $user->save();
+
+        return $user;
+    }
+
+    public static function create_superadmin_user()
+    {
+        $user = User::create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@videosapp.com',
+            'password' => bcrypt('123456789'),
+            'super_admin' => true,
         ]);
 
-        $professorData = User::create([
-            'id' => $professorData['id'],
-            'name' => $professorData['name'],
-            'email' => $professorData['email'],
-            'password' => Hash::make($professorData['password']),
-            'current_team_id' => $professorData['current_team_id'],
+        $team = self::add_personal_team($user);
+        $user->update(['current_team_id' => $team->id]);
+        $user->save();
+
+        return $user;
+    }
+
+    public static function add_personal_team(User $user)
+    {
+        $team = Team::create([
+            'user_id' => $user->id,
+            'name' => "{$user->name}'s Team",
+            'personal_team' => true,
         ]);
-        $professorTeamData = Team::create([
-            'id' => $professorTeamData['id'],
-            'user_id' => $professorData['id'],
-            'name' => $professorTeamData['name'],
-            'personal_team' => $professorTeamData['personal_team'],
-        ]);
-        return [
-            'user' => $user,
-            'team' => $user_team,
-            'profesor' => $professorData,
-            'profesor_team' => $professorTeamData,
-        ];
+
+        return $team;
+    }
+
+    public static function define_gates()
+    {
+        Gate::define('manage-videos', function (User $user) {
+            return $user->hasRole('video_manager') || $user->isSuperAdmin();
+        });
+
+        Gate::define('manage-users', function (User $user) {
+            return $user->isSuperAdmin();
+        });
+    }
+
+    public static function create_permissions()
+    {
+        Permission::firstOrCreate(['name' => 'manage-videos']);
+        Permission::firstOrCreate(['name' => 'manage-users']);
     }
 }

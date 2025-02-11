@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Video;
 use Illuminate\Http\Request;
+use Tests\Unit\VideosTest;
 
 class VideosController extends Controller
 {
@@ -20,14 +21,9 @@ class VideosController extends Controller
         // Retornar la vista amb el vídeo
         return view('videos.show', compact('video'));
     }
-
     public function testedBy()
     {
-        // Només una prova per comprovar si la connexió funciona
-        $videos = Video::all();
-
-        // Retornar una resposta amb tots els vídeos
-        return response()->json($videos);
+        return VideosTest::class;
     }
 
 }
