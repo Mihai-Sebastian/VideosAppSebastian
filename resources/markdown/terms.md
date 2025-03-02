@@ -112,3 +112,25 @@ S'han millorat les funcionalitats de seguretat per garantir que les rutes proteg
 ### 4. **Testos d'unitat i de funcionalitat**
 S'han afegit proves automatitzades per verificar el correcte funcionament dels permisos i rols dels usuaris, així com la capacitat de gestionar vídeos segons el rol assignat.
 
+## Sprint 4
+
+### Descripció del Sprint
+
+En aquest sprint, s'han realitzat millores significatives en la interfície d'usuari i en la gestió de vídeos. A continuació, es detallen les principals tasques realitzades:
+
+### 1. **Millores en la interfície d'usuari**
+- S'ha redissenyat la pàgina de llistat de vídeos per mostrar els vídeos en una graella de **2 per fila**.
+- S'ha afegit un disseny responsiu per assegurar que la pàgina es vegi bé en totes les mides de pantalla.
+- S'han afegit miniatures als vídeos, que ocupen tota la card, i el títol del vídeo es mostra sota la card.
+
+### 2. **Paginació de vídeos**
+- S'ha implementat la paginació per mostrar 12 vídeos per pàgina (2 per fila × 6 files).
+- S'han afegit botons de paginació ("Anterior" i "Següent") per navegar entre les pàgines de vídeos.
+
+### 3. **Proves de la interfície d'usuari**
+- S'han afegit proves per verificar que els vídeos es mostren correctament en la graella de 2 per fila.
+- S'han afegit proves per verificar que la paginació funciona correctament.
+
+### 4. **Gestió d'usuaris**
+- S'ha afegit la possibilitat de crear, editar i eliminar usuaris.
+- S'han afegit proves per verificar que la gestió d'usuaris funciona correctament.

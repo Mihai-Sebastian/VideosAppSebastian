@@ -13,6 +13,32 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Assegura que el body ocupi com a mínim l'alçada de la pantalla */
+            overflow-x: hidden; /* Evitar desplaçament horitzontal */
+        }
+
+        /* Navbar */
+        nav {
+            background-color: #202020;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ff0000;
         }
 
         /* Encapçalament */
@@ -31,72 +57,53 @@
 
         /* Contingut principal */
         main {
-            max-width: 1200px;
-            margin: 20px auto;
+            flex-grow: 1; /* Això fa que el contingut principal ocupi l'espai disponible */
             padding: 20px;
+            width: 100%; /* Ocupa tot l'amplada disponible */
         }
 
-        /* Contenidor de vídeo */
-        .video-container {
-            position: relative;
-            padding-top: 56.25%;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        /* Contenidor del contingut */
+        .content-container {
+            max-width: 1400px; /* Amplada màxima del contingut */
+            margin: 0 auto; /* Centrat horitzontalment */
+            padding: 0 20px; /* Padding als costats */
         }
 
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
+        /* Estil per a les files de vídeos */
+        .video-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px; /* Espai entre vídeos */
+            margin-bottom: 20px; /* Espai entre files */
         }
 
-        /* Informació del vídeo */
-        .video-info {
+        /* Estil per a cada vídeo */
+        .video-card {
+            flex: 0 0 calc(25% - 12px); /* 4 vídeos per fila */
             background-color: #282828;
-            padding: 15px;
             border-radius: 8px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .video-info p {
-            color: #ccc;
-            font-size: 1rem;
-        }
-
-        /* Botons de navegació */
-        .video-navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        /* Alineació dels botons de navegació */
-        .video-navigation a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(90deg, #ff4e50, #f9d423);
-            transition: transform 0.3s ease, background 0.3s ease;
+            overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .video-navigation a:hover {
-            background: linear-gradient(90deg, #ff3b3b, #f9c300);
-            transform: scale(1.05);
+        .video-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
         }
 
-        .video-navigation .next-video-btn {
-            margin-left: auto;
+        .video-card .video-info {
+            padding: 12px;
+        }
+
+        .video-card .video-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .video-card .video-description {
+            font-size: 0.9rem;
+            color: #ccc;
         }
 
         /* Peu de pàgina */
@@ -107,21 +114,79 @@
             margin-top: 40px;
             font-size: 0.9rem;
             color: #aaa;
+            width: 100%;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        /* Paginació */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-item {
+            margin: 0 5px;
+        }
+
+        .pagination .page-link {
+            background-color: #282828;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #444;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #ff0000;
+            border-color: #ff0000;
         }
     </style>
 </head>
 <body>
+
+<!-- Navbar -->
+<nav>
+    <div>
+        <a href="{{ route('videos.index') }}">Vídeos</a>
+        @auth
+            <a href="{{ route('videos.manage.index') }}">Gestionar Vídeos</a>
+        @endauth
+    </div>
+    <div>
+        @auth
+            <!-- Formulari per tancar sessió -->
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: bold;">Tancar Sessió</button>
+            </form>
+        @else
+            <a href="{{ route('login') }}">Iniciar Sessió</a>
+        @endauth
+    </div>
+</nav>
 
 <header>
     <h1>VideosApp</h1>
 </header>
 
 <main>
-    {{ $slot }}
+    <div class="content-container">
+        {{ $slot }}
+    </div>
 </main>
 
 <footer>
-    <p>&copy; {{ date('Y') }} VideosApp</p>
+    <p>&copy; {{ date('Y') }} VideosApp. Tots els drets reservats.</p>
 </footer>
 </body>
 </html>

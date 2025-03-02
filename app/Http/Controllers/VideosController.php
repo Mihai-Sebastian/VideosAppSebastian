@@ -10,20 +10,24 @@ class VideosController extends Controller
 {
     public function show($id)
     {
-        // Buscar el vídeo per ID
-        $video = Video::find($id);
+        $video = Video::findOrFail($id);
 
-        // Si el vídeo no existeix, retornar error 404
-        if (!$video) {
-            return response()->json(['message' => 'Vídeo no trobat'], 404);
-        }
+        $previous = Video::where('id', '<', $video->id)->orderBy('id', 'desc')->first();
 
-        // Retornar la vista amb el vídeo
-        return view('videos.show', compact('video'));
+        $next = Video::where('id', '>', $video->id)->orderBy('id', 'asc')->first();
+
+        return view('videos.show', compact('video', 'previous', 'next'));
     }
+
     public function testedBy()
     {
         return VideosTest::class;
     }
+    public function index()
+    {
+        $videos = Video::paginate(3);
+        return view('videos.index', compact('videos'));
+    }
+
 
 }

@@ -5,8 +5,6 @@ namespace Tests\Feature\Videos;
 use App\Models\User;
 use App\Models\Video;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Gate;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class VideosManageControllerTest extends TestCase
@@ -16,93 +14,258 @@ class VideosManageControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->seed();
     }
 
-    /**
-     * Test per comprovar que un usuari amb el permís de "video_manager" pot gestionar vídeos.
-     */
+    /** @test */
     public function test_user_with_permissions_can_manage_videos()
     {
-        // Loguegem l'usuari amb el rol de video_manager
+        // Creem 3 vídeos manualment
+        $videos = \App\Models\Video::create([
+            'title' => 'Video 1',
+            'url' => 'https://www.youtube.com/watch?v=video1',
+            'description' => 'Descripció del vídeo 1'
+        ]);
+
+        $videos = \App\Models\Video::create([
+            'title' => 'Video 2',
+            'url' => 'https://www.youtube.com/watch?v=video2',
+            'description' => 'Descripció del vídeo 2'
+        ]);
+
+        $videos = \App\Models\Video::create([
+            'title' => 'Video 3',
+            'url' => 'https://www.youtube.com/watch?v=video3',
+            'description' => 'Descripció del vídeo 3'
+        ]);
+
+        // Loguem l'usuari com a Video Manager
         $videoManager = $this->loginAsVideoManager();
 
-        // Fem una petició GET per accedir a la pàgina de gestió de vídeos
+        // Realitzem la petició a la ruta '/videos/manage'
         $response = $this->actingAs($videoManager)->get('/videos/manage');
 
-        // Comprovem que la resposta sigui exitosa
+        // Comprovem que la resposta sigui correcta
         $response->assertStatus(200);
+
+        // Comprovem que els 3 vídeos es mostren en la vista (si és necessari, segons com estigui implementada la vista)
+        $response->assertSee('Video 1');
+        $response->assertSee('Video 2');
+        $response->assertSee('Video 3');
     }
 
-    /**
-     * Test per comprovar que un usuari regular no pot gestionar vídeos.
-     */
-    public function test_regular_users_cannot_manage_videos()
+    public function test_user_without_videos_manage_create_cannot_see_add_videos()
     {
-        // Loguegem un usuari regular
+        // Loguem un usuari regular (sense permisos per gestionar vídeos)
         $regularUser = $this->loginAsRegularUser();
 
-        // Fem una petició GET per intentar accedir a la pàgina de gestió de vídeos
-        $response = $this->actingAs($regularUser)->get('/videos/manage');
+        // Intentem accedir a la pàgina per crear un vídeo
+        $response = $this->actingAs($regularUser)->get('/videos/manage/create');
 
-        // Comprovem que la resposta sigui un error 403 (Forbidden)
+        // Comprovem que l'usuari no pot veure la pàgina i rep un error 403
+        $response->assertStatus(403);
+    }
+    /** @test */
+    public function test_regular_users_cannot_manage_videos()
+    {
+        $regularUser = $this->loginAsRegularUser();
+        $response = $this->actingAs($regularUser)->get('/videos/manage');
         $response->assertStatus(403);
     }
 
-    /**
-     * Test per comprovar que els usuaris convidats (no autenticats) no poden gestionar vídeos.
-     */
+    /** @test */
     public function test_guest_users_cannot_manage_videos()
     {
-        // Fem una petició GET sense estar logueats
         $response = $this->get('/videos/manage');
-
-        // Comprovem que la resposta sigui un redirect al login
         $response->assertRedirect(route('login'));
     }
 
-    /**
-     * Test per comprovar que un superadmin pot gestionar vídeos.
-     */
+    /** @test */
     public function test_superadmins_can_manage_videos()
     {
-        // Loguegem un superadmin
         $superAdmin = $this->loginAsSuperAdmin();
-
-        // Fem una petició GET per gestionar vídeos
         $response = $this->actingAs($superAdmin)->get('/videos/manage');
-
-        // Comprovem que la resposta sigui exitosa
         $response->assertStatus(200);
     }
 
-    /**
-     * Funció per loguejar un usuari amb el seu rol.
-     *
-     * @return User
-     */
-    public function loginAsVideoManager()
+    /** @test */
+    public function test_user_with_permissions_can_see_add_videos()
     {
-        $videoManager = User::where('email', 'videosmanager@videosapp.com')->first();
-        return $videoManager;
+        $videoManager = $this->loginAsVideoManager();
+        $response = $this->actingAs($videoManager)->get('/videos/manage/create');
+        $response->assertStatus(200);
     }
 
-    /**
-     * @return User
-     */
-    public function loginAsSuperAdmin()
+    /** @test */
+    public function test_user_without_permissions_cannot_see_add_videos()
     {
-        $superAdmin = User::where('email', 'superadmin@videosapp.com')->first();
-        return $superAdmin;
+        $regularUser = $this->loginAsRegularUser();
+        $response = $this->actingAs($regularUser)->get('/videos/manage/create');
+        $response->assertStatus(403);
     }
 
-    /**
-     * @return User
-     */
-    public function loginAsRegularUser()
+    /** @test */
+    public function test_user_with_permissions_can_store_videos()
     {
-        $regularUser = User::where('email', 'regular@videosapp.com')->first();
-        return $regularUser;
+        $videoManager = $this->loginAsVideoManager();
+
+        $videoData = [
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ];
+
+        $response = $this->actingAs($videoManager)->post('/videos/manage', $videoData);
+        $response->assertRedirect('/videos/manage');
+        $this->assertDatabaseHas('videos', ['title' => 'Test Video']);
+    }
+
+    /** @test */
+    public function test_user_without_permissions_cannot_store_videos()
+    {
+        $regularUser = $this->loginAsRegularUser();
+
+        // Accés a create
+        $response = $this->actingAs($regularUser)->get('/videos/manage/create');
+        $response->assertStatus(403); // Canviat de 302 a 403
+
+        // POST request
+        $videoData = [
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ];
+
+        $response = $this->actingAs($regularUser)->post('/videos/manage', $videoData);
+        $response->assertStatus(403); // Canviat de 302 a 403
+        $this->assertDatabaseMissing('videos', ['title' => 'Test Video']);
+    }
+
+    /** @test */
+    public function test_user_with_permissions_can_destroy_videos()
+    {
+        $videoManager = $this->loginAsVideoManager();
+
+        // Creació completa del vídeo
+        $video = Video::factory()->create([
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ]);
+
+        $response = $this->actingAs($videoManager)->delete('/videos/manage/' . $video->id);
+        $response->assertRedirect('/videos/manage');
+        $this->assertDatabaseMissing('videos', ['id' => $video->id]);
+    }
+
+    /** @test */
+    public function test_user_without_permissions_cannot_destroy_videos()
+    {
+        $regularUser = $this->loginAsRegularUser();
+
+        // Creació completa del vídeo
+        $video = Video::factory()->create([
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ]);
+
+        $response = $this->actingAs($regularUser)->delete('/videos/manage/' . $video->id);
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('videos', ['id' => $video->id]);
+    }
+
+    /** @test */
+    public function test_user_with_permissions_can_see_edit_videos()
+    {
+        $videoManager = $this->loginAsVideoManager();
+
+        // Creació completa del vídeo
+        $video = Video::factory()->create([
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ]);
+
+        $response = $this->actingAs($videoManager)->get('/videos/manage/' . $video->id . '/edit');
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function test_user_without_permissions_cannot_see_edit_videos()
+    {
+        $regularUser = $this->loginAsRegularUser();
+
+        // Creació completa del vídeo
+        $video = Video::factory()->create([
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ]);
+
+        $response = $this->actingAs($regularUser)->get('/videos/manage/' . $video->id . '/edit');
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function test_user_with_permissions_can_update_videos()
+    {
+        $videoManager = $this->loginAsVideoManager();
+
+        // Creació completa del vídeo
+        $video = Video::factory()->create([
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ]);
+
+        $videoData = [
+            'title' => 'Updated Title',
+            'description' => 'Updated description', // Afegit
+            'url' => 'http://example.com/updated' // Afegit
+        ];
+
+        $response = $this->actingAs($videoManager)->put('/videos/manage/' . $video->id, $videoData);
+        $response->assertRedirect('/videos/manage');
+        $this->assertDatabaseHas('videos', ['id' => $video->id, 'title' => 'Updated Title']);
+    }
+
+    /** @test */
+    public function test_user_without_permissions_cannot_update_videos()
+    {
+        $regularUser = $this->loginAsRegularUser();
+
+        // Creació completa del vídeo
+        $video = Video::factory()->create([
+            'title' => 'Test Video',
+            'description' => 'Test description',
+            'url' => 'http://example.com/test-video'
+        ]);
+
+        $videoData = [
+            'title' => 'Updated Title',
+            'description' => 'Updated description', // Afegit
+            'url' => 'http://example.com/updated' // Afegit
+        ];
+
+        $response = $this->actingAs($regularUser)->put('/videos/manage/' . $video->id, $videoData);
+        $response->assertStatus(403);
+        $this->assertDatabaseMissing('videos', ['title' => 'Updated Title']);
+    }
+
+    // Funcions auxiliars
+    private function loginAsVideoManager(): User
+    {
+        return User::where('email', 'videosmanager@videosapp.com')->firstOrFail();
+    }
+
+    private function loginAsSuperAdmin(): User
+    {
+        return User::where('email', 'superadmin@videosapp.com')->firstOrFail();
+    }
+
+    private function loginAsRegularUser(): User
+    {
+        return User::where('email', 'regular@videosapp.com')->firstOrFail();
     }
 }
