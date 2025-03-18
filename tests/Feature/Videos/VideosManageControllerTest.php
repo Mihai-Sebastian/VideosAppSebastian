@@ -24,19 +24,23 @@ class VideosManageControllerTest extends TestCase
         $videos = \App\Models\Video::create([
             'title' => 'Video 1',
             'url' => 'https://www.youtube.com/watch?v=video1',
-            'description' => 'Descripció del vídeo 1'
+            'description' => 'Descripció del vídeo 1',
+            'user_id' => 1
         ]);
 
         $videos = \App\Models\Video::create([
             'title' => 'Video 2',
             'url' => 'https://www.youtube.com/watch?v=video2',
-            'description' => 'Descripció del vídeo 2'
+            'description' => 'Descripció del vídeo 2',
+            'user_id' => 1
         ]);
 
         $videos = \App\Models\Video::create([
             'title' => 'Video 3',
             'url' => 'https://www.youtube.com/watch?v=video3',
-            'description' => 'Descripció del vídeo 3'
+            'description' => 'Descripció del vídeo 3',
+            'user_id' => 1
+
         ]);
 
         // Loguem l'usuari com a Video Manager
@@ -133,7 +137,9 @@ class VideosManageControllerTest extends TestCase
         $videoData = [
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
+
         ];
 
         $response = $this->actingAs($regularUser)->post('/videos/manage', $videoData);
@@ -150,7 +156,8 @@ class VideosManageControllerTest extends TestCase
         $video = Video::factory()->create([
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
         ]);
 
         $response = $this->actingAs($videoManager)->delete('/videos/manage/' . $video->id);
@@ -167,7 +174,9 @@ class VideosManageControllerTest extends TestCase
         $video = Video::factory()->create([
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
+
         ]);
 
         $response = $this->actingAs($regularUser)->delete('/videos/manage/' . $video->id);
@@ -184,7 +193,8 @@ class VideosManageControllerTest extends TestCase
         $video = Video::factory()->create([
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
         ]);
 
         $response = $this->actingAs($videoManager)->get('/videos/manage/' . $video->id . '/edit');
@@ -200,7 +210,8 @@ class VideosManageControllerTest extends TestCase
         $video = Video::factory()->create([
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
         ]);
 
         $response = $this->actingAs($regularUser)->get('/videos/manage/' . $video->id . '/edit');
@@ -216,13 +227,16 @@ class VideosManageControllerTest extends TestCase
         $video = Video::factory()->create([
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
         ]);
 
         $videoData = [
             'title' => 'Updated Title',
-            'description' => 'Updated description', // Afegit
-            'url' => 'http://example.com/updated' // Afegit
+            'description' => 'Updated description',
+            'url' => 'http://example.com/updated',
+            'user_id' => 1
+
         ];
 
         $response = $this->actingAs($videoManager)->put('/videos/manage/' . $video->id, $videoData);
@@ -239,13 +253,16 @@ class VideosManageControllerTest extends TestCase
         $video = Video::factory()->create([
             'title' => 'Test Video',
             'description' => 'Test description',
-            'url' => 'http://example.com/test-video'
+            'url' => 'http://example.com/test-video',
+            'user_id' => 1
         ]);
 
         $videoData = [
             'title' => 'Updated Title',
-            'description' => 'Updated description', // Afegit
-            'url' => 'http://example.com/updated' // Afegit
+            'description' => 'Updated description',
+            'url' => 'http://example.com/updated' ,
+            'user_id' => 1
+
         ];
 
         $response = $this->actingAs($regularUser)->put('/videos/manage/' . $video->id, $videoData);

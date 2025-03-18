@@ -13,11 +13,15 @@ class VideosTest extends TestCase
     /** @test */
     public function users_can_view_videos()
     {
-        // Crear un vídeo a la base de dades
+        // Crear un usuari per assignar-lo al vídeo
+        $user = \App\Models\User::factory()->create();
+
+        // Crear un vídeo a la base de dades amb un `user_id`
         $video = Video::factory()->create([
             'title' => 'Prova de vídeo',
             'description' => 'Aquest és un vídeo de prova',
             'url' => 'https://www.youtube.com/watch?v=123456',
+            'user_id' => $user->id,
         ]);
 
         // Fer una petició GET a la ruta del vídeo

@@ -10,6 +10,7 @@ class VideosManageController extends Controller
 {
     public function index()
     {
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (auth()->user()->can('manage-videos')) {
             $videos = Video::all();
             return view('videos.manage.index', compact('videos'));
@@ -19,6 +20,7 @@ class VideosManageController extends Controller
 
     public function create()
     {
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (auth()->user()->can('manage-videos')) {
             return view('videos.manage.create');
         }
@@ -27,7 +29,7 @@ class VideosManageController extends Controller
 
     public function store(Request $request)
     {
-        // Verificar permisos amb can
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (!auth()->user()->can('manage-videos')) {
             abort(403, 'No tens permisos per realitzar aquesta acció.');
         }
@@ -39,7 +41,7 @@ class VideosManageController extends Controller
             'url' => 'required|url',
         ]);
 
-        // Crear el vídeo amb la data de creació
+        // Crear el vídeo amb l'usuari que el crea
         Video::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -47,12 +49,11 @@ class VideosManageController extends Controller
             'published_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
+            'user_id' => auth()->id(),
         ]);
 
         return redirect()->route('videos.manage.index')->with('success', 'Vídeo creat correctament.');
     }
-
-
 
     public function show($id)
     {
@@ -62,6 +63,7 @@ class VideosManageController extends Controller
 
     public function edit($id)
     {
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (auth()->user()->can('manage-videos')) {
             $video = Video::findOrFail($id);
             return view('videos.manage.edit', compact('video'));
@@ -71,12 +73,12 @@ class VideosManageController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Verificar permisos amb can
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (!auth()->user()->can('manage-videos')) {
             abort(403, 'No tens permisos per realitzar aquesta acció.');
         }
 
-        // Validar les dades
+        // Validar las datos
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -84,6 +86,12 @@ class VideosManageController extends Controller
         ]);
 
         $video = Video::findOrFail($id);
+
+        // Aquí verificamos si el usuario es el propietario o tiene el permiso 'manage-videos'
+        if ($video->user_id !== auth()->id() && !auth()->user()->can('manage-videos')) {
+            abort(403, 'No pots editar aquest vídeo.');
+        }
+
         $video->update($request->all());
 
         return redirect()->route('videos.manage.index')->with('success', 'Vídeo actualitzat correctament.');
@@ -91,6 +99,7 @@ class VideosManageController extends Controller
 
     public function delete($id)
     {
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (auth()->user()->can('manage-videos')) {
             $video = Video::findOrFail($id);
             return view('videos.manage.delete', compact('video'));
@@ -100,7 +109,7 @@ class VideosManageController extends Controller
 
     public function destroy($id)
     {
-        // Verificar permisos amb can
+        // Verificar si el usuario tiene el permiso 'manage-videos'
         if (!auth()->user()->can('manage-videos')) {
             abort(403, 'No tens permisos per realitzar aquesta acció.');
         }
@@ -113,6 +122,6 @@ class VideosManageController extends Controller
 
     public function testedBy()
     {
-        return VideosTest::class; // Esta línea puede ser removida si no es necesaria
+        return VideosTest::class;
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\UsersManageController;
 use App\Http\Controllers\VideosController;
 use App\Http\Controllers\VideosManageController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UsersController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +31,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/videos/manage/{video}/delete', [VideosManageController::class, 'delete'])->name('videos.manage.delete');
     Route::delete('/videos/manage/{video}', [VideosManageController::class, 'destroy'])->name('videos.manage.destroy');
 });
+
+Route::middleware(['auth'])->group(function () {
+    // Només els usuaris amb el permís 'manage-users' poden accedir a aquestes rutes
+    Route::get('/users/manage', [UsersManageController::class, 'index'])->name('users.manage.index');
+    Route::get('/users/manage/create', [UsersManageController::class, 'create'])->name('users.manage.create');
+    Route::post('/users/manage', [UsersManageController::class, 'store'])->name('users.manage.store');
+    Route::get('/users/manage/{user}/edit', [UsersManageController::class, 'edit'])->name('users.manage.edit');
+    Route::put('/users/manage/{user}', [UsersManageController::class, 'update'])->name('users.manage.update');
+    Route::get('/users/manage/{user}/delete', [UsersManageController::class, 'delete'])->name('users.manage.delete');
+    Route::delete('/users/manage/{user}', [UsersManageController::class, 'destroy'])->name('users.manage.destroy');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
+});
+
+
 
 // Ruta per veure tots els vídeos (estil pàgina de YouTube)
 Route::get('/videos', [VideosController::class, 'index'])->name('videos.index');

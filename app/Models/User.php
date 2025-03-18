@@ -38,6 +38,7 @@ class User extends Authenticatable
         'email',
         'password',
         'super_admin',
+        'current_team_id',
     ];
 
     /**
@@ -80,6 +81,10 @@ class User extends Authenticatable
     public function testedBy()
     {
         return UserHelperTest::class;
+    }
+    public function videos()
+    {
+        return $this->hasMany(Video::class);
     }
 
 }

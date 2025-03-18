@@ -16,6 +16,7 @@ class VideoHelper
             'previous' => null,
             'next' => 2,
             'series_id' => 1,
+            'user_id' => 1,
         ]);
 
         Video::create([
@@ -26,6 +27,8 @@ class VideoHelper
             'previous' => 1,
             'next' => 3,
             'series_id' => 1,
+            'user_id' => 1,
+
         ]);
         Video::create([
             'title' => 'Prova 3',
@@ -35,6 +38,8 @@ class VideoHelper
             'previous' => 2,
             'next' => null,
             'series_id' => 1,
+            'user_id' => 1,
+
         ]);
     }
 }

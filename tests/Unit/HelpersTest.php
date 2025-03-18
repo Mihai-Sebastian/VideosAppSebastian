@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Helpers\UserHelper;
 use Tests\TestCase;
 use App\Helpers\VideoHelper;
 use App\Models\Video;
@@ -14,9 +15,9 @@ class HelpersTest extends TestCase
     /** @test */
     public function it_creates_default_videos()
     {
+        UserHelper::create_regular_user();
         // Executem el helper per crear els vídeos
         VideoHelper::createDefaultVideo();
-
         // Verifiquem que s'han creat exactament 3 vídeos
         $this->assertEquals(3, Video::count());
 

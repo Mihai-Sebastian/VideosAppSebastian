@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        VideoHelper::createDefaultVideo();
         // Crear usuaris per defecte utilitzant els helpers
         UserHelper::create_regular_user();
         UserHelper::create_video_manager_user();
@@ -31,6 +30,9 @@ class DatabaseSeeder extends Seeder
 
         // Assignar rols als usuaris
         $this->assignRolesToUsers();
+
+        VideoHelper::createDefaultVideo();
+
     }
     private function createRoles()
     {
@@ -45,22 +47,22 @@ class DatabaseSeeder extends Seeder
     }
     private function assignRolesToUsers()
     {
-        // Assignar rol 'super_admin' a l'usuari superadmin
         $superAdmin = User::where('email', 'superadmin@videosapp.com')->first();
         if ($superAdmin) {
             $superAdmin->assignRole('super_admin');
+            $superAdmin->givePermissionTo(['manage-videos', 'manage-users']);
         }
 
-        // Assignar rol 'video_manager' a l'usuari video manager
         $videoManager = User::where('email', 'videosmanager@videosapp.com')->first();
         if ($videoManager) {
             $videoManager->assignRole('video_manager');
+            $videoManager->givePermissionTo('manage-videos');
         }
 
-        // Assignar rol 'regular_user' a l'usuari regular
         $regularUser = User::where('email', 'regular@videosapp.com')->first();
         if ($regularUser) {
             $regularUser->assignRole('regular_user');
         }
     }
+
 }

@@ -11,12 +11,17 @@ class Video extends Model
     use HasFactory;
 
     // Atributs mass assignables
-    protected $fillable = ['title', 'description', 'url', 'published_at', 'previous', 'next', 'series_id'];
+    protected $fillable = ['title', 'description', 'url', 'published_at', 'previous', 'next', 'series_id','user_id'];
 
     // Indicar que 'published_at' és una data
     protected $casts = [
         'published_at' => 'datetime',
     ];
+    // Relació amb User (cada vídeo pertany a un usuari)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     // Configurar Carbon perquè mostri les dates en català
     protected static function boot()
