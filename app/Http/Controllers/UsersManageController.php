@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UsersManageController extends Controller
@@ -28,8 +29,6 @@ class UsersManageController extends Controller
         abort(403, 'No tens permisos per crear un usuari.');
     }
 
-
-
     public function store(Request $request)
     {
         if (!auth()->user()->can('manage-users')) {
@@ -42,13 +41,16 @@ class UsersManageController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|exists:roles,name',
+        ], [
+            'password.min' => 'La contrasenya ha de tenir com a mínim 8 caràcters.',
+            'password.confirmed' => 'La confirmació de la contrasenya no coincideix.',
         ]);
 
         // Crear l'usuari
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
             'super_admin' => ($request->role === 'super_admin') ? 1 : 0,
         ]);
 
@@ -65,9 +67,9 @@ class UsersManageController extends Controller
         // Assignar el rol seleccionat
         $user->assignRole($request->role);
         $user->save();
+
         return redirect()->route('users.manage.index')->with('success', 'Usuari i Team creats correctament.');
     }
-
 
     public function edit($id)
     {
@@ -91,6 +93,9 @@ class UsersManageController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|exists:roles,name',
+        ], [
+            'password.min' => 'La contrasenya ha de tenir com a mínim 8 caràcters.',
+            'password.confirmed' => 'La confirmació de la contrasenya no coincideix.',
         ]);
 
         // Començar una transacció per assegurar-nos que tot es fa correctament
@@ -106,18 +111,26 @@ class UsersManageController extends Controller
 
             // Si es proporciona una nova contrasenya, actualitzar-la
             if ($request->filled('password')) {
-                $user->password = bcrypt($request->password);
+                $user->password = Hash::make($request->password);
             }
 
-            // Actualitzar el rol de l'usuari
+            // Actualitzar el camp super_admin segons el rol seleccionat
+            $user->super_admin = ($request->role === 'super_admin') ? 1 : 0;
+
+            // Netejar tots els rols i permisos antics
+            $user->roles()->detach(); // Eliminar tots els rols actuals
+            $user->permissions()->detach(); // Eliminar tots els permisos directes
+
+            // Revocar tots els permisos heredats
+            foreach ($user->getAllPermissions() as $permission) {
+                $user->revokePermissionTo($permission);
+            }
+
+            // Assignar el nou rol (utilitzem syncRoles per assegurar-nos que només hi hagi un rol)
             $user->syncRoles([$request->role]);
 
-            // Assignar el Team si cal
-            if ($request->role === 'super_admin') {
-                // Per exemple, si és un super admin, assignem el primer equip
-                $team = Team::first(); // O crear un equip si cal
-                $user->current_team_id = $team->id;
-            }
+            // Netejar la caché de permisos
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
             // Desar les actualitzacions
             $user->save();
@@ -134,7 +147,6 @@ class UsersManageController extends Controller
             return back()->with('error', 'Hi ha hagut un error al actualitzar l\'usuari: ' . $e->getMessage());
         }
     }
-
 
     public function delete($id)
     {

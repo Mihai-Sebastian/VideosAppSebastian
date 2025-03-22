@@ -82,6 +82,9 @@ class User extends Authenticatable
     {
         return UserHelperTest::class;
     }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function videos()
     {
         return $this->hasMany(Video::class);

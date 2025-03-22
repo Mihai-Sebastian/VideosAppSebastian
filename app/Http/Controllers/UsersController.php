@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Http\Request;
 
 class UsersController extends Controller

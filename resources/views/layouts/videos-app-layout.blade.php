@@ -32,7 +32,7 @@
         nav a {
             color: #fff;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 10px;
             font-weight: bold;
             transition: color 0.3s ease;
         }
@@ -84,6 +84,24 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 1200px) {
+            .video-card {
+                flex: 0 0 calc(33.33% - 12px); /* 3 vídeos per fila */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .video-card {
+                flex: 0 0 calc(50% - 12px); /* 2 vídeos per fila */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-card {
+                flex: 0 0 100%; /* 1 vídeo per fila */
+            }
         }
 
         .video-card img {
@@ -150,6 +168,39 @@
             background-color: #ff0000;
             border-color: #ff0000;
         }
+
+        /* Estils per a la taula d'usuaris */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            min-width: 600px;
+        }
+
+        .table th, .table td {
+            white-space: nowrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        .invalid-feedback {
+            color: #dc3545; /* Color vermell per als missatges d'error */
+            font-size: 0.875em; /* Mida de la font més petita */
+        }
+
+        .is-invalid {
+            border-color: #dc3545 !important; /* Bordes vermells per als camps amb errors */
+        }
+
+        @media (max-width: 768px) {
+            .btn-sm {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -159,7 +210,13 @@
     <div>
         <a href="{{ route('videos.index') }}">Vídeos</a>
         @auth
-            <a href="{{ route('videos.manage.index') }}">Gestionar Vídeos</a>
+            @can('manage-videos')
+                <a href="{{ route('videos.manage.index') }}">Gestionar Vídeos</a>
+            @endcan
+            <a href="{{ route('users.index') }}">Usuaris</a>
+            @can('manage-users')
+                <a href="{{ route('users.manage.index') }}">Gestionar Usuaris</a>
+            @endcan
         @endauth
     </div>
     <div>
@@ -167,7 +224,10 @@
             <!-- Formulari per tancar sessió -->
             <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                 @csrf
-                <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: bold;">Tancar Sessió</button>
+                <button type="submit"
+                        style="background: none; border: none; color: white; cursor: pointer; font-weight: bold;">Tancar
+                    Sessió
+                </button>
             </form>
         @else
             <a href="{{ route('login') }}">Iniciar Sessió</a>

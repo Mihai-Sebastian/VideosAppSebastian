@@ -55,10 +55,10 @@ class VideosManageController extends Controller
         return redirect()->route('videos.manage.index')->with('success', 'Vídeo creat correctament.');
     }
 
-    public function show($id)
+    public function show($id): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
     {
         $video = Video::findOrFail($id);
-        return view('videos.manage.show', compact('video'));
+        return view('videos.manage.index', compact('video'));
     }
 
     public function edit($id)

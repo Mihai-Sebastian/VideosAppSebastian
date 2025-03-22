@@ -33,7 +33,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    // Només els usuaris amb el permís 'manage-users' poden accedir a aquestes rutes
     Route::get('/users/manage', [UsersManageController::class, 'index'])->name('users.manage.index');
     Route::get('/users/manage/create', [UsersManageController::class, 'create'])->name('users.manage.create');
     Route::post('/users/manage', [UsersManageController::class, 'store'])->name('users.manage.store');

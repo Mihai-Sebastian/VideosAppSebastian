@@ -134,3 +134,19 @@ En aquest sprint, s'han realitzat millores significatives en la interfície d'us
 ### 4. **Gestió d'usuaris**
 - S'ha afegit la possibilitat de crear, editar i eliminar usuaris.
 - S'han afegit proves per verificar que la gestió d'usuaris funciona correctament.
+
+# Sprint 5 - Resum de Desenvolupament
+
+## Funcionalitats Implementades
+- **Gestió d'Usuaris**
+    - Creació del `UsersManageController` per gestionar usuaris amb permisos adequats.
+    - Implementació de les funcionalitats `index`, `create`, `store`, `edit`, `update` i `destroy`.
+    - Validació de dades per evitar errors en la creació i actualització d'usuaris.
+    - Assignació de rols mitjançant `spatie/laravel-permission`.
+    - 
+## Correcció d'Errors
+- **Problema amb rols inexistents en els tests**
+    - Afegida la creació de rols abans d'executar les proves amb `createRoles()`.
+- **Error de camp obligatori en l'actualització d'usuaris**
+    - S'ha corregit l'assignació del rol en `update()` per evitar errors de validació.
+
