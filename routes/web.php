@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ApiMultimediaController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersManageController;
 use App\Http\Controllers\VideosController;
 use App\Http\Controllers\VideosManageController;
@@ -47,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
 });
+
 
 
 

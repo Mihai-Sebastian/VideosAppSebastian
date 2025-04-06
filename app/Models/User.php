@@ -15,7 +15,7 @@ use Tests\Unit\UserHelperTest;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, Notifiable, HasFactory, HasProfilePhoto, HasTeams, TwoFactorAuthenticatable, HasRoles;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
