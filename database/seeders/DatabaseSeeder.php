@@ -18,10 +18,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        UserHelper::define_gates();
         // Crear usuaris per defecte utilitzant els helpers
         UserHelper::create_regular_user();
         UserHelper::create_video_manager_user();
         UserHelper::create_superadmin_user();
+        UserHelper::create_series_manager_user();
+
 
         // Crear permisos utilitzant el helper
         UserHelper::create_permissions();
@@ -32,6 +35,8 @@ class DatabaseSeeder extends Seeder
         $this->assignRolesToUsers();
 
         VideoHelper::createDefaultVideo();
+        VideoHelper::createDefaultSeries();
+
 
     }
     private function createRoles()
@@ -40,10 +45,12 @@ class DatabaseSeeder extends Seeder
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
         $videoManagerRole = Role::firstOrCreate(['name' => 'video_manager']);
         $regularUserRole = Role::firstOrCreate(['name' => 'regular_user']);
+        $seriesManagerRole = Role::firstOrCreate(['name' => 'series_manager']);
 
         // Assignar permisos als rols
         $videoManagerRole->givePermissionTo('manage-videos');
-        $superAdminRole->givePermissionTo(['manage-videos', 'manage-users']);
+        $seriesManagerRole->givePermissionTo('manage-series');
+        $superAdminRole->givePermissionTo(['manage-videos', 'manage-users', 'manage-series']);
     }
     private function assignRolesToUsers()
     {
@@ -57,6 +64,11 @@ class DatabaseSeeder extends Seeder
         if ($videoManager) {
             $videoManager->assignRole('video_manager');
             $videoManager->givePermissionTo('manage-videos');
+        }
+        $seriesManager = User::where('email', 'seriesmanager@videosapp.com')->first();
+        if ($seriesManager) {
+            $seriesManager->assignRole('series_manager');
+            $seriesManager->givePermissionTo('manage-series');
         }
 
         $regularUser = User::where('email', 'regular@videosapp.com')->first();

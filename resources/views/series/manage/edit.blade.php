@@ -1,0 +1,46 @@
+<x-videos-app-layout>
+    <div class="container py-5">
+        <h1 class="mb-4 text-center" style="color: #ff5733; font-weight: bold;">Editar Sèrie: {{ $serie->title }}</h1>
+
+        <form action="{{ route('series.manage.update', $serie->id) }}" method="POST" data-qa="edit-series-form">
+            @csrf
+            @method('PUT')
+
+            <div class="form-group mb-3">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label for="title" class="form-label">Títol</label>
+                        <input type="text" name="title" id="title" class="form-control shadow-sm" placeholder="Introdueix el títol" value="{{ old('title', $serie->title) }}" required data-qa="title-input">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Descripció</label>
+                        <textarea name="description" id="description" rows="3" class="form-control shadow-sm" placeholder="Introdueix la descripció">{{ old('description', $serie->description) }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="image" class="form-label">Imatge</label>
+                        <input type="text" name="image" id="image" class="form-control shadow-sm" placeholder="URL de la imatge" value="{{ old('image', $serie->image) }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="videos" class="form-label">Assigna vídeos a la sèrie</label>
+                        <select name="videos[]" id="videos" class="form-select shadow-sm" multiple>
+                            @foreach($videos as $video)
+                                <option value="{{ $video->id }}"
+                                        @if(in_array($video->id, $selectedVideos))
+                                            selected
+                                    @endif>
+                                    {{ $video->title }} ({{ $video->published_at->format('Y-m-d') }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">Mantingues premut Ctrl (Windows) o Cmd (Mac) per seleccionar múltiples vídeos</small>
+                    </div>
+
+                    <button type="submit" class="btn" style="background: linear-gradient(45deg, #ff5733, #ff8c00); color: white; font-weight: bold; border-radius: 5px; padding: 10px 20px;" data-qa="submit-edit-btn">Actualitzar Sèrie</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</x-videos-app-layout>

@@ -9,7 +9,15 @@ class Multimedia extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','title','description','file_name', 'file_path','thumbnail_path', 'type'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'file_name',
+        'file_path',
+        'thumbnail_path',
+        'type'
+    ];
 
     public function user()
     {

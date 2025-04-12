@@ -10,7 +10,7 @@
         </form>
 
         <!-- Taula d'usuaris -->
-        <div class="card shadow-lg border-0 mx-auto" style="border-radius: 15px; overflow: hidden; max-width: 100%;">
+        <div class="table-responsive mt-4" style="overflow-x: auto;">
             <div class="card-body p-4">
                 <!-- Contenidor amb desplaçament horitzontal només per a la taula -->
                 <div style="overflow-x: auto;">

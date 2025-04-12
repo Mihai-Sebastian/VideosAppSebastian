@@ -23,6 +23,11 @@ class Video extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function serie()
+    {
+        return $this->belongsTo(Serie::class, 'series_id');
+    }
+
     // Configurar Carbon perquè mostri les dates en català
     protected static function boot()
     {

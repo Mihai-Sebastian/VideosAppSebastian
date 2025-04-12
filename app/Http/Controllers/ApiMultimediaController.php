@@ -86,8 +86,6 @@ class ApiMultimediaController extends Controller
     }
 
     // Actualitza les dades d'un vídeo
-    // Exemple d'ApiMultimediaController.php
-
     public function update(Request $request)
     {
         // Validar les dades
@@ -115,7 +113,6 @@ class ApiMultimediaController extends Controller
             $video->update([
                 'title' => $request->title,
                 'description' => $request->description,
-                // Actualitza altres camps si cal
             ]);
 
             return response()->json(['message' => 'Vídeo actualitzat correctament'], 200);

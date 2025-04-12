@@ -4,36 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Video;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Tests\Unit\VideosTest;
 
 class VideosManageController extends Controller
 {
     public function index()
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (auth()->user()->can('manage-videos')) {
+        $user = Auth::user();
+
+        // Si té permís, mostra tots els vídeos
+        if ($user->can('manage-videos')) {
             $videos = Video::all();
-            return view('videos.manage.index', compact('videos'));
+        } else {
+            // Si no té permís, només pot veure els seus propis
+            $videos = Video::where('user_id', $user->id)->get();
         }
-        abort(403, 'Unauthorized');
+
+        return view('videos.manage.index', compact('videos'));
     }
 
     public function create()
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (auth()->user()->can('manage-videos')) {
-            return view('videos.manage.create');
-        }
-        abort(403, 'Unauthorized');
+        // Qualsevol usuari autenticat pot crear vídeos
+        return view('videos.manage.create');
     }
 
     public function store(Request $request)
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (!auth()->user()->can('manage-videos')) {
-            abort(403, 'No tens permisos per realitzar aquesta acció.');
-        }
-
         // Validar les dades
         $request->validate([
             'title' => 'required|string|max:255',
@@ -63,62 +61,59 @@ class VideosManageController extends Controller
 
     public function edit($id)
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (auth()->user()->can('manage-videos')) {
-            $video = Video::findOrFail($id);
-            return view('videos.manage.edit', compact('video'));
+        $video = Video::findOrFail($id);
+
+        // L'usuari pot editar si és propietari o té permisos
+        if (auth()->id() !== $video->user_id && !auth()->user()->can('manage-videos')) {
+            abort(403, 'No pots editar aquest vídeo.');
         }
-        abort(403, 'Unauthorized');
+
+        return view('videos.manage.edit', compact('video'));
     }
 
     public function update(Request $request, $id)
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (!auth()->user()->can('manage-videos')) {
-            abort(403, 'No tens permisos per realitzar aquesta acció.');
+        $video = Video::findOrFail($id);
+
+        if (auth()->id() !== $video->user_id && !auth()->user()->can('manage-videos')) {
+            abort(403, 'No pots actualitzar aquest vídeo.');
         }
 
-        // Validar las datos
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'url' => 'required|url',
         ]);
 
-        $video = Video::findOrFail($id);
-
-        // Aquí verificamos si el usuario es el propietario o tiene el permiso 'manage-videos'
-        if ($video->user_id !== auth()->id() && !auth()->user()->can('manage-videos')) {
-            abort(403, 'No pots editar aquest vídeo.');
-        }
-
-        $video->update($request->all());
+        $video->update($request->only(['title', 'description', 'url']));
 
         return redirect()->route('videos.manage.index')->with('success', 'Vídeo actualitzat correctament.');
     }
 
     public function delete($id)
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (auth()->user()->can('manage-videos')) {
-            $video = Video::findOrFail($id);
-            return view('videos.manage.delete', compact('video'));
+        $video = Video::findOrFail($id);
+
+        if (auth()->id() !== $video->user_id && !auth()->user()->can('manage-videos')) {
+            abort(403, 'No pots eliminar aquest vídeo.');
         }
-        abort(403, 'Unauthorized');
+
+        return view('videos.manage.delete', compact('video'));
     }
 
     public function destroy($id)
     {
-        // Verificar si el usuario tiene el permiso 'manage-videos'
-        if (!auth()->user()->can('manage-videos')) {
-            abort(403, 'No tens permisos per realitzar aquesta acció.');
+        $video = Video::findOrFail($id);
+
+        if (auth()->id() !== $video->user_id && !auth()->user()->can('manage-videos')) {
+            abort(403, 'No pots eliminar aquest vídeo.');
         }
 
-        $video = Video::findOrFail($id);
         $video->delete();
 
         return redirect()->route('videos.manage.index')->with('success', 'Vídeo eliminat correctament.');
     }
+
 
     public function testedBy()
     {

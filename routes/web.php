@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ApiMultimediaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SeriesController;
+use App\Http\Controllers\SeriesManageController;
 use App\Http\Controllers\UsersManageController;
 use App\Http\Controllers\VideosController;
 use App\Http\Controllers\VideosManageController;
@@ -21,6 +23,23 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('series/manage')->name('series.manage.')->group(function () {
+        Route::get('/', [SeriesManageController::class, 'index'])->name('index'); // Llistar sèries
+        Route::get('create', [SeriesManageController::class, 'create'])->name('create'); // Crear sèrie
+        Route::post('store', [SeriesManageController::class, 'store'])->name('store'); // Desa nova sèrie
+         Route::get('edit/{serie}', [SeriesManageController::class, 'edit'])->name('edit'); // Editar sèrie
+        Route::put('update/{serie}', [SeriesManageController::class, 'update'])->name('update'); // Actualitzar sèrie
+        Route::get('delete/{serie}', [SeriesManageController::class, 'delete'])->name('delete'); // Confirmar eliminar sèrie
+        Route::delete('destroy/{serie}', [SeriesManageController::class, 'destroy'])->name('destroy'); // Eliminar sèrie
+    });
+
+    Route::prefix('series')->name('series.')->group(function () {
+        Route::get('/', [SeriesController::class, 'index'])->name('index'); // Mostrar totes les sèries
+        Route::get('{serie}', [SeriesController::class, 'show'])->name('show'); // Mostrar els vídeos d'una sèrie
+    });
 });
 
 // Rutes per la gestió de vídeos (només per usuaris autenticats i amb permisos)

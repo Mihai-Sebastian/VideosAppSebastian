@@ -59,6 +59,24 @@ class UserHelper extends TestCase
         return $user;
     }
 
+    public static function create_series_manager_user()
+    {
+        $user = User::create([
+            'name' => 'Series Manager',
+            'email' => 'seriesmanager@videosapp.com',
+            'password' => bcrypt('123456789'),
+            'current_team_id' => null,
+        ]);
+
+        $user->save();
+
+        $team = self::add_personal_team($user);
+        $user->update(['current_team_id' => $team->id]);
+        $user->save();
+
+        return $user;
+    }
+
     public static function add_personal_team(User $user)
     {
         $team = Team::create([
@@ -79,11 +97,15 @@ class UserHelper extends TestCase
         Gate::define('manage-users', function (User $user) {
             return $user->isSuperAdmin();
         });
+        Gate::define('manage-series', function (User $user) {
+            return $user->hasRole('manage-series') || $user->isSuperAdmin();
+        });
     }
 
     public static function create_permissions()
     {
         Permission::firstOrCreate(['name' => 'manage-videos']);
         Permission::firstOrCreate(['name' => 'manage-users']);
+        Permission::firstOrCreate(['name' => 'manage-series']);
     }
 }
