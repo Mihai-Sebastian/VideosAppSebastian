@@ -287,9 +287,7 @@
     <div>
         <a href="{{ route('videos.index') }}">Vídeos</a>
         @auth
-            @can('manage-videos')
                 <a href="{{ route('videos.manage.index') }}">Gestionar Vídeos</a>
-            @endcan
             <a href="{{ route('users.index') }}">Usuaris</a>
             @can('manage-users')
                 <a href="{{ route('users.manage.index') }}">Gestionar Usuaris</a>
