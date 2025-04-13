@@ -150,3 +150,46 @@ En aquest sprint, s'han realitzat millores significatives en la interfície d'us
 - **Error de camp obligatori en l'actualització d'usuaris**
     - S'ha corregit l'assignació del rol en `update()` per evitar errors de validació.
 
+# Sprint 6 - Resum de Desenvolupament
+
+### 1. Testos funcionals amb Laravel
+
+S’ha creat el fitxer `SeriesManageControllerTest.php` amb proves completes de permisos d’accés i operacions CRUD:
+
+- **Tests d’autenticació i rols:**
+    - `guest_users_cannot_manage_series`
+    - `regular_users_cannot_manage_series`
+    - `videomanagers_can_manage_series`
+    - `superadmins_can_manage_series`
+
+- **Tests de creació:**
+    - `user_with_permissions_can_see_add_series`
+    - `user_without_series_manage_create_cannot_see_add_series`
+    - `user_with_permissions_can_store_series`
+    - `user_without_permissions_cannot_store_series`
+
+- **Tests d’edició:**
+    - `user_with_permissions_can_see_edit_series`
+    - `user_without_permissions_cannot_see_edit_series`
+    - `user_with_permissions_can_update_series`
+    - `user_without_permissions_cannot_update_series`
+
+- **Tests d’eliminació:**
+    - `user_with_permissions_can_destroy_series`
+    - `user_without_permissions_cannot_destroy_series`
+
+- **Test global de gestió:**
+    - `user_with_permissions_can_manage_series`
+
+### 2. Creació manual d’usuaris i permisos
+
+- No s'han utilitzat `factories`.
+- Els usuaris, rols i permisos s’han creat manualment mitjançant els mètodes:
+    - `loginAsVideoManager()`
+    - `loginAsSuperAdmin()`
+    - `loginAsRegularUser()`
+
+### 3. Configuració de permisos amb Spatie
+
+- Utilització del paquet `spatie/laravel-permission`.
+- Assignació de permisos directament dins els tests (`manage-series`).

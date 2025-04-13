@@ -45,7 +45,7 @@ class VideoHelper
             'published_at' => Carbon::now(),
             'previous' => null,
             'next' => 2,
-            'serie_id' => 1, // Assignem la sèrie correcta
+            'serie_id' => 1,
             'user_id' => 1,
         ]);
 
@@ -56,7 +56,7 @@ class VideoHelper
             'published_at' => Carbon::now()->subDays(2),
             'previous' => 1,
             'next' => 3,
-            'serie_id' => 2, // Assignem la sèrie correcta
+            'serie_id' => 2,
             'user_id' => 1,
         ]);
 
@@ -67,7 +67,7 @@ class VideoHelper
             'published_at' => Carbon::now()->subDays(2),
             'previous' => 2,
             'next' => null,
-            'serie_id' => 1, // Assignem la sèrie correcta
+            'serie_id' => 1,
             'user_id' => 1,
         ]);
     }

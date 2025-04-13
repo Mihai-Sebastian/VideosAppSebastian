@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('videos.index');
 });
 
 // Middleware per autenticació amb Jetstream
@@ -21,7 +21,7 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect()->route('videos.index');
     })->name('dashboard');
 });
 
@@ -68,7 +68,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
 });
-
 
 
 

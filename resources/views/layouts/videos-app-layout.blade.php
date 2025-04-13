@@ -291,10 +291,11 @@
                 <a href="{{ route('videos.manage.index') }}">Gestionar Vídeos</a>
             @endcan
             <a href="{{ route('users.index') }}">Usuaris</a>
-            <a href="{{ route('series.index') }}">Sèries</a>
             @can('manage-users')
                 <a href="{{ route('users.manage.index') }}">Gestionar Usuaris</a>
             @endcan
+                <a href="{{ route('series.index') }}">Sèries</a>
+
             @can('manage-series')
                 <a href="{{ route('series.manage.index') }}">Gestionar Sèries</a>
             @endcan

@@ -281,8 +281,8 @@ class VideosManageControllerTest extends TestCase
         return User::where('email', 'superadmin@videosapp.com')->firstOrFail();
     }
 
-    private function loginAsRegularUser(): User
-    {
-        return User::where('email', 'regular@videosapp.com')->firstOrFail();
-    }
+//    private function loginAsRegularUser(): User
+//    {
+//        return User::where('email', 'regular@videosapp.com')->firstOrFail();
+//    }
 }
