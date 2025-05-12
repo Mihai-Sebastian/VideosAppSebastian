@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\VideoCreated;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,7 @@ class VideosManageController extends Controller
         ]);
 
         // Crear el vídeo amb l'usuari que el crea
-        Video::create([
+        $video =  Video::create([
             'title' => $request->title,
             'description' => $request->description,
             'url' => $request->url,
@@ -49,6 +50,8 @@ class VideosManageController extends Controller
             'updated_at' => now(),
             'user_id' => auth()->id(),
         ]);
+
+        event(new VideoCreated($video));
 
         return redirect()->route('videos.manage.index')->with('success', 'Vídeo creat correctament.');
     }

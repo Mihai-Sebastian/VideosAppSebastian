@@ -193,3 +193,44 @@ S’ha creat el fitxer `SeriesManageControllerTest.php` amb proves completes de 
 
 - Utilització del paquet `spatie/laravel-permission`.
 - Assignació de permisos directament dins els tests (`manage-series`).
+
+# Sprint 7 - Resum de Desenvolupament
+
+## 🔧 Funcionalitats desenvolupades
+
+- **Event `VideoCreated`**  
+  S'ha creat un event `VideoCreated` que s'activa en crear un nou vídeo.
+
+- **Broadcast de l'event via Pusher**  
+  S'ha configurat `ShouldBroadcast` i s'ha afegit `broadcastAs()` per enviar notificacions en temps real mitjançant Pusher.
+
+- **Listener `SendVideoCreatedNotification`**  
+  El listener envia una notificació a la base de dades a tots els usuaris amb `super_admin = true` quan es crea un vídeo nou.
+
+- **Notificació `VideoCreatedNotification`**  
+  La notificació s'ha configurat perquè es guardi a la base de dades (`via(['database'])`). També s'ha afegit estil al correu per enviar una versió HTML més elegant.
+
+- **Vista de notificacions millorada**  
+  La vista Blade `notifications/index.blade.php` mostra totes les notificacions en un disseny net i modern.
+
+- **Tests unitaris afegits**
+    - `test_video_created_event_is_dispatched`: verifica que es dispara l'event.
+    - `test_push_notification_is_sent_when_video_is_created`: comprova que es desa la notificació per als superadmins.
+
+## ⚙️ Configuració del sistema
+
+- **Pusher**: Configurat al `.env` per broadcasting.
+- **Mailtrap**: Utilitzat per rebre els correus de notificació en entorns de desenvolupament.
+- **Laravel Echo + JavaScript**: Configurat per escoltar events `video.created`.
+
+## 📂 Ubicació del codi clau
+
+- Event: `app/Events/VideoCreated.php`
+- Listener: `app/Listeners/SendVideoCreatedNotification.php`
+- Notificació: `app/Notifications/VideoCreatedNotification.php`
+- Test: `tests/Unit/VideoNotificationsTest.php`
+- Vista: `resources/views/notifications/index.blade.php`
+- Correu: `resources/views/emails/video_created.blade.php`
+
+## ✅ Estat
+Totes les funcionalitats s'han testejat correctament i funcionen com s'espera.

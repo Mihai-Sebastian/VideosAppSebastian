@@ -7,12 +7,19 @@ use App\Http\Controllers\SeriesManageController;
 use App\Http\Controllers\UsersManageController;
 use App\Http\Controllers\VideosController;
 use App\Http\Controllers\VideosManageController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
 
 Route::get('/', function () {
     return redirect()->route('videos.index');
 });
+
+Route::get('/notificacions', function () {
+    $notifications = auth()->user()->notifications()->latest()->get();
+
+    return view('notifications.index', compact('notifications'));
+})->middleware('auth');
 
 // Middleware per autenticació amb Jetstream
 Route::middleware([
