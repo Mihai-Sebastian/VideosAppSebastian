@@ -11,7 +11,7 @@ class VideoCreatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $video;
+    protected $video;
 
     public function __construct(Video $video)
     {
@@ -30,5 +30,10 @@ class VideoCreatedNotification extends Notification implements ShouldQueue
             'title' => $this->video->title,
             'url' => $this->video->url,
         ];
+    }
+
+    public function getVideo()
+    {
+        return $this->video;
     }
 }

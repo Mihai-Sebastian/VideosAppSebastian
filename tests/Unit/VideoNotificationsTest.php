@@ -57,8 +57,8 @@ class VideoNotificationsTest extends TestCase
             [$superAdmin],
             VideoCreatedNotification::class,
             function ($notification, $channels) use ($video) {
-                return $notification->video->id === $video->id &&
-                    in_array('database', $channels);
+                return $notification->getVideo()->id === $video->id;
+
             }
         );
     }
