@@ -43,21 +43,25 @@ class ApiMultimediaController extends Controller
             $thumbnailPath = null;
 
             // Processar només vídeos
-            if (str_starts_with($file->getMimeType(), 'video/')) {
+            if (in_array($file->getMimeType(), ['video/mp4', 'video/x-matroska'])) {
                 $ffmpeg = FFMpeg::create();
+                /** @var \FFMpeg\Media\Video $video */
+
                 $video = $ffmpeg->open(storage_path('app/public/' . $path));
 
-                // Crear directori de thumbnails
+                // Crear directori de miniatures
                 $thumbnailDir = storage_path('app/public/multimedia/thumbnails');
                 if (!file_exists($thumbnailDir)) {
                     mkdir($thumbnailDir, 0777, true);
                 }
 
-                // Generar thumbnail amb nom únic
+                // Generar la miniatura
                 $thumbnailPath = 'multimedia/thumbnails/' . uniqid() . '.jpg';
+
                 $video->frame(TimeCode::fromSeconds(1))
                     ->save(storage_path('app/public/' . $thumbnailPath));
             }
+
 
             $multimedia = Multimedia::create([
                 'user_id' => auth()->id(),

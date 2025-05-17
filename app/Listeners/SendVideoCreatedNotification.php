@@ -13,6 +13,7 @@ class SendVideoCreatedNotification
 {
     public function handle(VideoCreated $event)
     {
+
         // Enviar correu als admins
         Mail::to('admin@example.com')->send(new VideoCreatedMail($event->video));
 

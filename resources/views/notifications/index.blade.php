@@ -1,89 +1,94 @@
-<!DOCTYPE html>
-<html lang="ca">
-<head>
-    <meta charset="UTF-8">
-    <title>Notificacions</title>
+<x-videos-app-layout>
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Notificacions <span class="badge-custom">{{ $notifications->count() }}</span></h1>
+
+        <div class="custom-card">
+            <div class="card-header-custom">
+                <h5 class="mb-0">
+                    <i class="fas fa-bell me-2"></i>Les teves notificacions
+                </h5>
+            </div>
+
+            <div class="card-body-custom">
+                @forelse ($notifications as $notification)
+                    <div class="notification-box mb-3 p-3 rounded d-flex flex-column flex-md-row align-items-start gap-3 border border-light-subtle">
+                        <div class="notification-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="notification-details w-100">
+                            <div class="d-flex justify-content-between flex-wrap">
+                                <div class="notification-title mb-2">
+                                    Nou vídeo creat: <strong>{{ $notification->data['title'] }}</strong>
+                                </div>
+                                <div class="notification-time text-secondary small">
+                                    <i class="fas fa-clock me-1"></i>{{ $notification->created_at->format('d/m/Y H:i') }}
+                                </div>
+                            </div>
+                            <div class="notification-actions">
+                                <a href="{{ $notification->data['url'] }}"
+                                   class="btn-primary-custom btn-sm"
+                                   data-qa="notification-link-{{ $notification->id }}">
+                                    <i class="fas fa-play-circle me-1"></i>Veure vídeo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fs-1 mb-3 text-muted"></i>
+                        <p class="text-muted">No tens notificacions disponibles.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9fafb;
-            color: #333;
-            margin: 0;
-            padding: 40px;
+        .notification-box {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s ease;
         }
 
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        .notification-box:hover {
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
-        h1 {
-            color: #2c3e50;
-            font-size: 28px;
-            margin-bottom: 20px;
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
-            background-color: #f1f5f9;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            transition: background-color 0.2s ease;
-        }
-
-        li:hover {
-            background-color: #e2e8f0;
-        }
-
-        a {
-            color: #3498db;
-            text-decoration: none;
+        .notification-title {
             font-weight: 500;
+            color: var(--text-primary);
         }
 
-        a:hover {
-            text-decoration: underline;
+        .notification-title strong {
+            color: var(--primary-color);
         }
 
-        small {
-            display: block;
-            color: #888;
-            margin-top: 6px;
-            font-size: 12px;
+        .notification-actions .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            margin-top: 5px;
         }
 
-        .empty {
-            text-align: center;
-            color: #aaa;
-            font-style: italic;
-            margin-top: 40px;
+        .badge-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
         }
     </style>
-</head>
-<body>
-<div class="container">
-    <h1>Notificacions ({{ $notifications->count() }})</h1>
-
-    <ul>
-        @forelse ($notifications as $notification)
-            <li>
-                Nou vídeo creat: <strong>{{ $notification->data['title'] }}</strong><br>
-                <a href="{{ $notification->data['url'] }}" target="_blank">Veure vídeo</a>
-                <small>{{ $notification->created_at->format('d/m/Y H:i') }}</small>
-            </li>
-        @empty
-            <p class="empty">No tens notificacions.</p>
-        @endforelse
-    </ul>
-</div>
-</body>
-</html>
+</x-videos-app-layout>

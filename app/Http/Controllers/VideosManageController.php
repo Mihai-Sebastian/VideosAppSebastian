@@ -14,16 +14,23 @@ class VideosManageController extends Controller
     {
         $user = Auth::user();
 
-        // Si té permís, mostra tots els vídeos
         if ($user->can('manage-videos')) {
+            // Admins veuen tots els vídeos
             $videos = Video::all();
-        } else {
-            // Si no té permís, només pot veure els seus propis
-            $videos = Video::where('user_id', $user->id)->get();
+            return view('videos.manage.index', compact('videos'));
         }
 
-        return view('videos.manage.index', compact('videos'));
+        if ($user->can('create', Video::class) || Video::where('user_id', $user->id)->exists()) {
+            // Si pot crear o té vídeos propis, el redirigim a la vista pública amb un avís
+            return redirect()->route('videos.index')->with('info', 'Només pots gestionar els teus propis vídeos des de la pàgina principal.');
+        }
+
+        // Si no té cap permís, retornem un 403
+        abort(403, 'No tens permís per accedir a la gestió de vídeos.');
     }
+
+
+
 
     public function create()
     {
@@ -96,26 +103,45 @@ class VideosManageController extends Controller
     public function delete($id)
     {
         $video = Video::findOrFail($id);
+        $user = auth()->user();
 
-        if (auth()->id() !== $video->user_id && !auth()->user()->can('manage-videos')) {
-            abort(403, 'No pots eliminar aquest vídeo.');
+        if ($user->id === $video->user_id || $user->can('manage-videos')) {
+            return view('videos.manage.delete', compact('video'));
         }
 
-        return view('videos.manage.delete', compact('video'));
+        if ($user->can('create', Video::class)) {
+            return redirect()->route('videos.index')->with('info', 'Només pots eliminar els teus propis vídeos.');
+        }
+
+        abort(403, 'No tens permís per eliminar aquest vídeo.');
     }
+
+
 
     public function destroy($id)
     {
         $video = Video::findOrFail($id);
+        $user = auth()->user();
 
-        if (auth()->id() !== $video->user_id && !auth()->user()->can('manage-videos')) {
-            abort(403, 'No pots eliminar aquest vídeo.');
+        if ($user->id === $video->user_id || $user->can('manage-videos')) {
+            $video->delete();
+
+            // Redirecció condicionada segons permisos
+            if ($user->can('manage-videos')) {
+                return redirect()->route('videos.manage.index')->with('success', 'Vídeo eliminat correctament.');
+            } else {
+                return redirect()->route('videos.index')->with('success', 'El teu vídeo s\'ha eliminat correctament.');
+            }
         }
 
-        $video->delete();
+        if ($user->can('create', Video::class)) {
+            return redirect()->route('videos.index')->with('info', 'Només pots eliminar els teus propis vídeos.');
+        }
 
-        return redirect()->route('videos.manage.index')->with('success', 'Vídeo eliminat correctament.');
+        abort(403, 'No tens permís per eliminar aquest vídeo.');
     }
+
+
 
 
     public function testedBy()

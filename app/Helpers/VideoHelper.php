@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helpers;
+
 use App\Models\Video;
 use Illuminate\Support\Carbon;
 use App\Models\Serie;
@@ -9,11 +10,12 @@ class VideoHelper
 {
     public static function createDefaultVideo()
     {
-        // Creem les sèries primer
+        // Creem les sèries primer (amb user_id assignat)
         $series1 = Serie::create([
             'title' => 'Laravel per Començants',
             'description' => 'Introducció a Laravel pas a pas.',
             'image' => 'https://picsum.photos/600/400?random=1',
+            'user_id' => 1,
             'user_name' => 'Admin',
             'user_photo_url' => 'https://ui-avatars.com/api/?name=Admin',
             'published_at' => now()->subDays(3),
@@ -23,6 +25,7 @@ class VideoHelper
             'title' => 'Vue.js Essentials',
             'description' => 'Tot el que necessites per començar amb Vue.',
             'image' => 'https://picsum.photos/600/400?random=2',
+            'user_id' => 1,
             'user_name' => 'Admin',
             'user_photo_url' => 'https://ui-avatars.com/api/?name=Admin',
             'published_at' => now()->subDays(2),
@@ -32,6 +35,7 @@ class VideoHelper
             'title' => 'Projectes Complets amb Laravel i Vue',
             'description' => 'Com unir Laravel i Vue per crear apps completes.',
             'image' => 'https://picsum.photos/600/400?random=3',
+            'user_id' => 1,
             'user_name' => 'Admin',
             'user_photo_url' => 'https://ui-avatars.com/api/?name=Admin',
             'published_at' => now()->subDay(),
@@ -45,7 +49,7 @@ class VideoHelper
             'published_at' => Carbon::now(),
             'previous' => null,
             'next' => 2,
-            'serie_id' => 1,
+            'serie_id' => $series1->id,
             'user_id' => 1,
         ]);
 
@@ -56,7 +60,7 @@ class VideoHelper
             'published_at' => Carbon::now()->subDays(2),
             'previous' => 1,
             'next' => 3,
-            'serie_id' => 2,
+            'serie_id' => $series2->id,
             'user_id' => 1,
         ]);
 
@@ -67,18 +71,19 @@ class VideoHelper
             'published_at' => Carbon::now()->subDays(2),
             'previous' => 2,
             'next' => null,
-            'serie_id' => 1,
+            'serie_id' => $series1->id,
             'user_id' => 1,
         ]);
     }
 
     public static function createDefaultSeries()
     {
-        // Creem les sèries per separat si vols gestionar-los de manera més estructurada
+        // Creem les sèries per separat, amb user_id inclòs
         Serie::create([
             'title' => 'Laravel per Començants',
             'description' => 'Introducció a Laravel pas a pas.',
             'image' => 'https://picsum.photos/600/400?random=1',
+            'user_id' => 1,
             'user_name' => 'Admin',
             'user_photo_url' => 'https://ui-avatars.com/api/?name=Admin',
             'published_at' => now()->subDays(3),
@@ -88,6 +93,7 @@ class VideoHelper
             'title' => 'Vue.js Essentials',
             'description' => 'Tot el que necessites per començar amb Vue.',
             'image' => 'https://picsum.photos/600/400?random=2',
+            'user_id' => 1,
             'user_name' => 'Admin',
             'user_photo_url' => 'https://ui-avatars.com/api/?name=Admin',
             'published_at' => now()->subDays(2),
@@ -97,6 +103,7 @@ class VideoHelper
             'title' => 'Projectes Complets amb Laravel i Vue',
             'description' => 'Com unir Laravel i Vue per crear apps completes.',
             'image' => 'https://picsum.photos/600/400?random=3',
+            'user_id' => 1,
             'user_name' => 'Admin',
             'user_photo_url' => 'https://ui-avatars.com/api/?name=Admin',
             'published_at' => now()->subDay(),

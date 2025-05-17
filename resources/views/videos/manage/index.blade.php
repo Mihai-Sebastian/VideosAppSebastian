@@ -1,35 +1,61 @@
 <x-videos-app-layout>
-    <div class="container">
-        <h1 class="mb-4">Gestió de Vídeos</h1>
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Gestió de Vídeos</h1>
 
-        <a href="{{ route('videos.manage.create') }}" class="btn btn-primary mb-3" data-qa="create-video-btn">Afegir Vídeo</a>
+        <!-- Botó Afegir Vídeo -->
+        <div class="d-flex justify-content-center mb-4">
+            <a href="{{ route('videos.manage.create') }}"
+               class="btn-primary-custom text-uppercase"
+               style="border-radius: 25px;"
+               data-qa="create-video-btn">
+                <i class="fas fa-plus me-2"></i>Afegir Vídeo
+            </a>
+        </div>
 
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Títol</th>
-                <th>Descripció</th>
-                <th>Accions</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($videos as $video)
-                <tr>
-                    <td>{{ $video->id }}</td>
-                    <td>{{ $video->title }}</td>
-                    <td>{{ $video->description }}</td>
-                    <td>
-                        <a href="{{ route('videos.manage.edit', $video->id) }}" class="btn btn-warning btn-sm" data-qa="edit-video-btn">Editar</a>
-                        <a href="{{ route('videos.manage.delete', $video->id) }}" class="btn btn-danger btn-sm" data-qa="delete-video-btn">Eliminar</a>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+        <!-- Taula de Vídeos -->
+        <div class="custom-card p-4">
+            <div class="table-responsive">
+                <table class="table table-hover text-center w-100" style="min-width: 600px;">
+                    <thead style="background: linear-gradient(45deg, var(--primary-color), var(--primary-hover)); color: white;">
+                    <tr>
+                        <th>ID</th>
+                        <th>Títol</th>
+                        <th>Descripció</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @forelse($videos as $video)
+                        <tr style="background-color: var(--card-bg); color: var(--text-primary); height: 60px;">
+                            <td>{{ $video->id }}</td>
+                            <td>{{ $video->title }}</td>
+                            <td class="text-start">{{ Str::limit($video->description, 80) }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- Botó Editar -->
+                                    <a href="{{ route('videos.manage.edit', $video->id) }}"
+                                       class="btn btn-warning-custom btn-sm"
+                                       data-qa="edit-video-{{ $video->id }}">
+                                        <i class="fas fa-edit me-1"></i>Editar
+                                    </a>
 
-        @if($videos->isEmpty())
-            <p class="text-center">No hi ha vídeos disponibles.</p>
-        @endif
+                                    <!-- Botó Eliminar (redirecció a vista de confirmació) -->
+                                    <a href="{{ route('videos.manage.delete', $video->id) }}"
+                                       class="btn btn-danger-custom btn-sm"
+                                       data-qa="delete-video-{{ $video->id }}">
+                                        <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No hi ha vídeos disponibles.</td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </x-videos-app-layout>

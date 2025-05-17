@@ -6,328 +6,567 @@
     <title>VideosApp</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #ff3e3e;
+            --primary-hover: #ff5252;
+            --secondary-color: #3a3a3a;
+            --background-dark: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+        }
+
         /* Estils generals */
         body {
-            background-color: #0f0f0f;
-            color: #fff;
-            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
         /* Navbar */
-        nav {
-            background-color: #202020;
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        .navbar-custom {
+            background-color: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        nav a {
-            color: #fff;
-            text-decoration: none;
-            margin: 0 12px;
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
             font-weight: 500;
-            transition: color 0.3s ease;
+            margin: 0 10px;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all var(--transition-speed) ease;
         }
 
-        nav a:hover {
-            color: #ff0000;
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
         }
 
-        /* Encapçalament */
-        header {
-            background-color: #202020;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        .nav-link.active {
+            background-color: rgba(255, 62, 62, 0.1);
+            color: var(--primary-color) !important;
         }
 
-        header h1 {
-            color: #ff0000;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0;
+        .logout-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 15px rgba(255, 62, 62, 0.3);
         }
 
-        /* Contingut principal */
-        main {
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 62, 62, 0.4);
+        }
+
+        /* Contenidor principal */
+        .main-container {
             flex-grow: 1;
-            padding: 20px 0;
+            padding: 30px 0;
             width: 100%;
-        }
-
-        /* Contenidor del contingut */
-        .content-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 30px 20px;
         }
 
-        /* YouTube-style video grid */
-        .youtube-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+        /* Títols */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
         }
 
-        /* Video card styling */
-        .video-card {
-            background-color: #1e1e1e;
-            border-radius: 12px;
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--primary-color), #ff8a8a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Cards i contenidors */
+        .custom-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             height: 100%;
         }
 
-        .video-card:hover {
+        .custom-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .video-thumbnail {
+        .card-header-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+            border-bottom: none;
+        }
+
+        .card-body-custom {
+            padding: 25px;
+        }
+
+        /* Botons */
+        .btn-primary-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 15px rgba(255, 62, 62, 0.3);
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 62, 62, 0.4);
+        }
+
+        .btn-secondary-custom {
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-secondary-custom:hover {
+            background-color: #4a4a4a;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger-custom {
+            background: linear-gradient(45deg, #ff3e3e, #ff5252);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-danger-custom:hover {
+            background: linear-gradient(45deg, #ff5252, #ff6b6b);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning-custom {
+            background: linear-gradient(45deg, #ffb700, #ffc730);
+            border: none;
+            color: #333;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-warning-custom:hover {
+            background: linear-gradient(45deg, #ffc730, #ffd460);
+            transform: translateY(-2px);
+        }
+
+        /* Reproductor de vídeo */
+        .video-player-container {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 30px;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .video-player {
+            width: 100%;
+            height: 70vh;
+            border-radius: var(--border-radius);
             overflow: hidden;
         }
 
-        .video-thumbnail img {
+        .video-title-overlay {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+            z-index: 10;
         }
 
-        .video-duration {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background-color: rgba(0, 0, 0, 0.8);
+        .video-title-overlay h2 {
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.5rem;
         }
 
-        .video-info {
-            padding: 12px;
+        .video-info-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .video-title {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .video-description {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.7;
         }
 
-        .video-meta {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* Improved pagination */
-        .youtube-pagination {
+        .video-meta-info {
             display: flex;
-            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        .video-meta-info div {
+            display: flex;
             align-items: center;
-            margin: 30px 0;
             gap: 8px;
         }
 
-        .youtube-pagination .page-item {
-            list-style: none;
+        .video-meta-info i {
+            color: var(--primary-color);
         }
 
-        .youtube-pagination .page-link {
-            background-color: #2d2d2d;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-            display: inline-block;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .youtube-pagination .page-link:hover {
-            background-color: #444;
-        }
-
-        .youtube-pagination .page-item.active .page-link {
-            background-color: #ff0000;
-            color: white;
-        }
-
-        .youtube-pagination .page-item.disabled .page-link {
-            background-color: #222;
-            color: #666;
-            cursor: not-allowed;
-        }
-
-        /* Series header styling */
-        .series-header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 20px;
-            background-color: #1e1e1e;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .series-thumbnail {
-            margin-bottom: 20px;
-        }
-
-        .series-thumbnail img {
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ff0000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .series-title {
-            color: #fff;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .series-description {
-            color: #aaa;
-            max-width: 800px;
-            margin: 0 auto 20px;
-        }
-
-        .series-stats {
+        .video-actions {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            color: #aaa;
-            font-size: 14px;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .video-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        /* Llista de vídeos */
+        .video-list-item {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 15px;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .video-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-thumbnail-container {
+            flex: 0 0 120px;
+            margin-right: 20px;
+        }
+
+        .video-thumbnail {
+            width: 120px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .video-list-info {
+            flex: 1;
+        }
+
+        .video-list-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .video-list-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .video-list-actions {
+            margin-left: 15px;
+        }
+
+        /* Formularis */
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 62, 62, 0.25);
+            color: var(--text-primary);
+        }
+
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-select {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 12px 15px;
+        }
+
+        .form-select:focus {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 62, 62, 0.25);
+            color: var(--text-primary);
+        }
+
+        /* Badges i etiquetes */
+        .badge-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-right: 5px;
         }
 
         /* Peu de pàgina */
-        footer {
-            background-color: #202020;
+        .footer-custom {
+            background-color: rgba(18, 18, 18, 0.95);
+            padding: 30px 0;
             text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            font-size: 14px;
-            color: #aaa;
-            width: 100%;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.3);
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        footer p {
-            margin: 0;
+        .footer-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
-        /* Responsive adjustments */
+        .footer-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color var(--transition-speed) ease;
+        }
+
+        .footer-content a:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .video-player {
+                height: 60vh;
+            }
+        }
+
         @media (max-width: 768px) {
-            .youtube-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            .video-player {
+                height: 50vh;
             }
 
-            .youtube-pagination .page-numbers {
-                display: none;
+            .video-actions {
+                flex-direction: column;
+                gap: 10px;
             }
 
-            .youtube-pagination .page-prev,
-            .youtube-pagination .page-next {
-                display: block;
+            .video-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .video-meta-info {
+                flex-direction: column;
+                gap: 10px;
             }
         }
 
         @media (max-width: 576px) {
-            .youtube-grid {
-                grid-template-columns: 1fr;
+            .video-player {
+                height: 40vh;
             }
 
-            .series-thumbnail img {
-                width: 120px !important;
-                height: 120px !important;
-            }
-
-            .series-title {
-                font-size: 24px;
-            }
-
-            .series-stats {
+            .video-list-item {
                 flex-direction: column;
-                gap: 8px;
+                align-items: flex-start;
+            }
+
+            .video-thumbnail-container {
+                margin-right: 0;
+                margin-bottom: 15px;
+                width: 100%;
+            }
+
+            .video-thumbnail {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+
+            .video-list-actions {
+                margin-left: 0;
+                margin-top: 15px;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
             }
         }
     </style>
 </head>
 <body>
-
 <!-- Navbar -->
-<nav>
-    <div>
-        <a href="{{ route('videos.index') }}">Vídeos</a>
-        @auth
-                <a href="{{ route('videos.manage.index') }}">Gestionar Vídeos</a>
-            <a href="{{ route('users.index') }}">Usuaris</a>
-            @can('manage-users')
-                <a href="{{ route('users.manage.index') }}">Gestionar Usuaris</a>
-            @endcan
-                <a href="{{ route('series.index') }}">Sèries</a>
-
-            @can('manage-series')
-                <a href="{{ route('series.manage.index') }}">Gestionar Sèries</a>
-            @endcan
-
-        @endauth
-    </div>
-    <div>
-        @auth
-            <!-- Formulari per tancar sessió -->
-            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit"
-                        style="background: none; border: none; color: white; cursor: pointer; font-weight: bold;">Tancar
-                    Sessió
-                </button>
-            </form>
-        @else
-            <a href="{{ route('login') }}">Iniciar Sessió</a>
-        @endauth
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="{{ route('videos.index') }}">
+            <i class="fas fa-play-circle"></i> VideosApp
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('videos.index') ? 'active' : '' }}" href="{{ route('videos.index') }}">
+                        <i class="fas fa-video me-1"></i> Vídeos
+                    </a>
+                </li>
+                @auth
+                    @can('manage-videos')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('videos.manage.*') ? 'active' : '' }}" href="{{ route('videos.manage.index') }}">
+                                <i class="fas fa-cog me-1"></i> Gestionar Vídeos
+                            </a>
+                        </li>
+                    @endcan
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                            <i class="fas fa-users me-1"></i> Usuaris
+                        </a>
+                    </li>
+                    @can('manage-users')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('users.manage.*') ? 'active' : '' }}" href="{{ route('users.manage.index') }}">
+                                <i class="fas fa-user-cog me-1"></i> Gestionar Usuaris
+                            </a>
+                        </li>
+                    @endcan
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('series.index') ? 'active' : '' }}" href="{{ route('series.index') }}">
+                            <i class="fas fa-film me-1"></i> Sèries
+                        </a>
+                    </li>
+                    @can('manage-series')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('series.manage.*') ? 'active' : '' }}" href="{{ route('series.manage.index') }}">
+                                <i class="fas fa-tasks me-1"></i> Gestionar Sèries
+                            </a>
+                        </li>
+                    @endcan
+                        @if(auth()->user()->super_admin)
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->is('notificacions') ? 'active' : '' }}" href="{{ url('/notificacions') }}">
+                                    <i class="fas fa-bell me-1"></i> Notificacions
+                                </a>
+                            </li>
+                        @endif
+                @endauth
+            </ul>
+            <div class="d-flex">
+                @auth
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="logout-btn">
+                            <i class="fas fa-sign-out-alt me-1"></i> Tancar Sessió
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn-primary-custom">
+                        <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sessió
+                    </a>
+                @endauth
+            </div>
+        </div>
     </div>
 </nav>
 
-<header>
-    <h1>VideosApp</h1>
-</header>
+<!-- Contingut principal -->
+<div class="main-container">
+    {{ $slot }}
+</div>
 
-<main>
-    <div class="content-container">
-        {{ $slot }}
+<!-- Peu de pàgina -->
+<footer class="footer-custom">
+    <div class="container">
+        <div class="footer-content">
+            <p>&copy; {{ date('Y') }} VideosApp. Tots els drets reservats.</p>
+        </div>
     </div>
-</main>
-
-<footer>
-    <p>&copy; {{ date('Y') }} VideosApp. Tots els drets reservats.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

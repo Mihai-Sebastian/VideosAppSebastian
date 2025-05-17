@@ -26,6 +26,7 @@ class SerieTest extends TestCase
         $serie = Serie::create([
             'title' => 'Sèrie de prova',
             'description' => 'Descripció de prova',
+            'user_id' => $user->id,
             'user_name' => 'Prova Usuari',
         ]);
 

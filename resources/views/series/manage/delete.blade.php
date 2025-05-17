@@ -1,33 +1,55 @@
 <x-videos-app-layout>
     <div class="container py-5">
-        <h1 class="mb-4 text-center" style="color: #ff5733; font-weight: bold;">Eliminar Sèrie: {{ $serie->title }}</h1>
+        <h1 class="mb-4 text-center text-danger">Eliminar Sèrie: {{ $serie->title }}</h1>
 
-        <form action="{{ route('series.manage.destroy', $serie->id) }}" method="POST" data-qa="delete-series-form">
-            @csrf
-            @method('DELETE')
-
-            <!-- Input ocult per enviar un valor per defecte si el checkbox no està marcat -->
-            <input type="hidden" name="remove_videos" value="0">
-
-            <div class="mt-3 d-flex justify-content-center gap-2">
-                <div class="card-body p-4">
-                    <p class="mb-4">Estàs segur que vols eliminar aquesta sèrie? Aquesta acció eliminarà també els vídeos associats a la sèrie, a menys que decideixis desassignar-los.</p>
-
-                    <div class="mb-4">
-                        <label for="remove-videos" class="inline-flex items-center">
-                            <input type="checkbox" name="remove_videos" id="remove-videos" class="form-checkbox" value="1">
-                            <span class="ml-2">Desassignar els vídeos de la sèrie (No eliminar-los)</span>
-                        </label>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="custom-card">
+                    <div class="card-header-custom bg-danger text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Confirmació d'Eliminació
+                        </h5>
                     </div>
+                    <div class="card-body-custom text-center">
+                        <form action="{{ route('series.manage.destroy', $serie->id) }}" method="POST" data-qa="delete-series-form">
+                            @csrf
+                            @method('DELETE')
 
-                    <button type="submit" class="btn" style="background: linear-gradient(45deg, #ff5733, #ff8c00); color: white; font-weight: bold; border-radius: 5px; padding: 10px 20px;" data-qa="submit-delete-btn">Eliminar Sèrie</button>
-                    <a href="{{ route('series.manage.index') }}" class="btn btn-secondary" style="background: linear-gradient(45deg, #6c757d, #5a6268); color: white; padding: 10px 20px; border-radius: 25px; font-weight: bold; transition: all 0.3s ease-in-out;">Cancelar</a>
+                            <!-- Input ocult per defecte si el checkbox no es marca -->
+                            <input type="hidden" name="remove_videos" value="0">
+
+                            <p class="mb-4">
+                                Estàs segur que vols eliminar aquesta sèrie? <br>
+                                Aquesta acció pot eliminar també els vídeos associats,
+                                a menys que decideixis només desassignar-los.
+                            </p>
+
+                            <!-- Checkbox per desassignar en comptes d'eliminar -->
+                            <div class="form-check form-switch d-flex justify-content-center mb-4">
+                                <input type="checkbox"
+                                       name="remove_videos"
+                                       id="remove-videos"
+                                       value="1"
+                                       class="form-check-input me-2"
+                                       style="cursor: pointer;">
+                                <label for="remove-videos" class="form-check-label">
+                                    Desassignar els vídeos de la sèrie (no eliminar-los)
+                                </label>
+                            </div>
+
+                            <!-- Botons d'acció -->
+                            <div class="d-flex justify-content-center gap-3 mt-4">
+                                <a href="{{ route('series.manage.index') }}" class="btn-secondary-custom">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancel·lar
+                                </a>
+                                <button type="submit" class="btn-danger-custom" data-qa="submit-delete-btn">
+                                    <i class="fas fa-trash-alt me-2"></i>Eliminar Sèrie
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </form>
-
-
-
-
+        </div>
     </div>
 </x-videos-app-layout>

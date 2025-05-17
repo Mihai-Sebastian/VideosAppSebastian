@@ -23,126 +23,168 @@ class SeriesManageController extends Controller
 
     public function create()
     {
-        if (!auth()->user()->can('manage-series')) abort(403);
+        $user = auth()->user();
 
-        $videos = Video::all();
+        // Si té permís, veu tots els vídeos
+        if ($user->can('manage-series')) {
+            $videos = Video::all();
+        } else {
+            // Si no té permís, només veu els seus
+            $videos = Video::where('user_id', $user->id)->get();
+        }
 
         return view('series.manage.create', compact('videos'));
-
     }
+
 
     public function store(Request $request)
     {
-        if (!auth()->user()->can('manage-series')) abort(403);
+        $user = auth()->user();
 
-        // Validar la sol·licitud
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|string|url',
-            'videos' => 'nullable|array', // En cas que es seleccionin vídeos
-            'videos.*' => 'exists:videos,id', // Els vídeos seleccionats han de ser vàlids
+            'videos' => 'nullable|array',
+            'videos.*' => 'exists:videos,id',
         ]);
 
-        // Crear la nova sèrie
+        // Crear la sèrie
         $serie = Serie::create([
             'title' => $validated['title'],
-            'description' => $validated['description'],
-            'image' => $validated['image'],
-            'user_name' => auth()->user()->name, // Nom de l'usuari loguejat
-            'user_photo_url' => auth()->user()->profile_photo_url, // Foto de l'usuari loguejat
-            'published_at' => now(), // O una data personalitzada
+            'description' => $validated['description'] ?? null,
+            'image' => $validated['image'] ?? null,
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_photo_url' => $user->profile_photo_url,
+            'published_at' => now(),
         ]);
 
-        // Si s'han seleccionat vídeos, associar-los a la nova sèrie
-        if (!empty($validated['videos'])) {
-            // Actualitzar els vídeos seleccionats per associar-los a la sèrie
-            Video::whereIn('id', $validated['videos'])->update(['serie_id' => $serie->id]);
+        $videoIds = $validated['videos'] ?? [];
+
+        // Si no és admin, només pot afegir els seus vídeos
+        if (! $user->can('manage-series')) {
+            foreach ($videoIds as $videoId) {
+                $video = Video::find($videoId);
+                if ($video->user_id !== $user->id) {
+                    abort(403, 'Intent d’afegir un vídeo que no és teu.');
+                }
+            }
         }
 
-        // Redirigir a la vista de gestió de sèries amb un missatge de confirmació
-        return redirect()->route('series.manage.index')->with('success', 'Sèrie creada amb èxit!');
+        // Assignar vídeos
+        Video::whereIn('id', $videoIds)->update(['serie_id' => $serie->id]);
+
+        // Redirigir segons permís
+        if ($user->can('manage-series')) {
+            return redirect()->route('series.manage.index')->with('success', 'Sèrie creada correctament.');
+        }
+
+        return redirect()->route('series.index')->with('success', 'Sèrie creada correctament.');
+
     }
+
 
     public function edit(Serie $serie)
     {
-        if (!auth()->user()->can('manage-series')) abort(403);
+        $user = auth()->user();
 
-        // Carregar tots els vídeos disponibles
-        $videos = Video::all();
+        if (! $user->can('manage-series') && $user->id !== $serie->user_id) {
+            abort(403, 'No tens permís per editar aquesta sèrie.');
+        }
 
-        // Recuperar els vídeos associats a la sèrie actual
+        $videos = $user->can('manage-series')
+            ? Video::all()
+            : Video::where('user_id', $user->id)->get();
+
         $selectedVideos = $serie->videos->pluck('id')->toArray();
 
-        // Passar els vídeos i els vídeos seleccionats a la vista
         return view('series.manage.edit', compact('serie', 'videos', 'selectedVideos'));
     }
 
     public function update(Request $request, Serie $serie)
     {
-        if (!auth()->user()->can('manage-series')) abort(403);
+        $user = auth()->user();
 
-        // Validar la sol·licitud
+        if (! $user->can('manage-series') && $user->id !== $serie->user_id) {
+            abort(403, 'No tens permís per actualitzar aquesta sèrie.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|string|url',
-            'videos' => 'nullable|array', // En cas que es seleccionin vídeos
-            'videos.*' => 'exists:videos,id', // Els vídeos seleccionats han de ser vàlids
+            'videos' => 'nullable|array',
+            'videos.*' => 'exists:videos,id',
         ]);
 
-        // Actualitzar la sèrie
         $serie->update([
             'title' => $validated['title'],
-            'description' => $validated['description'],
-            'image' => $validated['image'],
+            'description' => $validated['description'] ?? null,
+            'image' => $validated['image'] ?? null,
         ]);
 
-        // Afegir nous vídeos seleccionats
-        if (!empty($validated['videos'])) {
-            // Assignar la sèrie als vídeos seleccionats
-            Video::whereIn('id', $validated['videos'])->update(['serie_id' => $serie->id]);
+        $videoIds = $validated['videos'] ?? [];
+
+        if (! $user->can('manage-series')) {
+            foreach ($videoIds as $videoId) {
+                $video = Video::find($videoId);
+                if ($video->user_id !== $user->id) {
+                    abort(403, 'No pots afegir vídeos que no són teus.');
+                }
+            }
         }
 
-        // Redirigir a la vista de gestió de sèries amb un missatge de confirmació
-        return redirect()->route('series.manage.index')->with('success', 'Sèrie actualitzada amb èxit!');
+        Video::whereIn('id', $videoIds)->update(['serie_id' => $serie->id]);
+
+        $redirect = $user->can('manage-series')
+            ? route('series.manage.index')
+            : route('series.show', $serie->id);
+
+        return redirect($redirect)->with('success', 'Sèrie actualitzada correctament.');
     }
 
 
     public function delete(Serie $serie)
     {
-        if (!auth()->user()->can('manage-series')) abort(403);
+        $user = auth()->user();
+
+        if (! $user->can('manage-series') && $user->id !== $serie->user_id) {
+            abort(403, 'No tens permís per eliminar aquesta sèrie.');
+        }
+
         return view('series.manage.delete', compact('serie'));
     }
 
     public function destroy(Serie $serie)
     {
+        $user = auth()->user();
 
-        if (!auth()->user()->can('manage-series')) abort(403);
+        if (! $user->can('manage-series') && $user->id !== $serie->user_id) {
+            abort(403, 'No tens permís per eliminar aquesta sèrie.');
+        }
 
-        // Obtenim els vídeos associats a la sèrie
-        $videos = Video::where('serie_id', $serie->id)->get();
-        // Si el checkbox no està marcat, eliminem els vídeos també
+        $videos = $serie->videos;
+
         if (request()->input('remove_videos') == 0) {
             foreach ($videos as $video) {
-
-                // Eliminar cada vídeo individualment
-                // Eliminar vídeo directament sense cercar-lo de nou
                 $video->delete();
             }
         } else {
-            // Si està marcat, només desassignem els vídeos
             foreach ($videos as $video) {
-                // Desassignar cada vídeo individualment
                 $video->update(['serie_id' => null]);
             }
         }
 
-        // Finalment, eliminem la sèrie
         $serie->delete();
 
-        return redirect()->route('series.manage.index')->with('success', 'Sèrie eliminada correctament.');
+        $redirect = $user->can('manage-series')
+            ? route('series.manage.index')
+            : route('series.index');
+
+        return redirect($redirect)->with('success', 'Sèrie eliminada correctament.');
     }
+
 
 
 
