@@ -4,15 +4,13 @@
 
         <!-- Botó Afegir Usuari -->
         <div class="d-flex justify-content-end mb-4">
-            <a href="{{ route('users.manage.create') }}"
-               class="btn-primary-custom"
-               data-qa="create-user-btn">
+            <x-button color="primary" href="{{ route('users.manage.create') }}" data-qa="create-user-btn">
                 <i class="fas fa-user-plus me-2"></i>Afegir Usuari
-            </a>
+            </x-button>
         </div>
 
-        <!-- Taula d'Usuaris -->
-        <div class="custom-card">
+        <!-- Taula d'Usuaris (només per escriptori) -->
+        <div class="custom-card d-none d-md-block">
             <div class="card-header-custom">
                 <h5 class="mb-0"><i class="fas fa-users me-2"></i>Llistat d'Usuaris</h5>
             </div>
@@ -35,19 +33,12 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        <!-- Botó Editar -->
-                                        <a href="{{ route('users.manage.edit', $user->id) }}"
-                                           class="btn-warning-custom btn-sm"
-                                           data-qa="edit-user-{{ $user->id }}">
+                                        <x-button color="warning" href="{{ route('users.manage.edit', $user->id) }}" class="btn-sm" data-qa="edit-user-{{ $user->id }}">
                                             <i class="fas fa-edit me-1"></i>Editar
-                                        </a>
-
-                                        <!-- Botó Eliminar (redirigeix a vista de confirmació) -->
-                                        <a href="{{ route('users.manage.delete', $user->id) }}"
-                                           class="btn-danger-custom btn-sm"
-                                           data-qa="delete-user-{{ $user->id }}">
+                                        </x-button>
+                                        <x-button color="danger" href="{{ route('users.manage.delete', $user->id) }}" class="btn-sm" data-qa="delete-user-{{ $user->id }}">
                                             <i class="fas fa-trash-alt me-1"></i>Eliminar
-                                        </a>
+                                        </x-button>
                                     </div>
                                 </td>
                             </tr>
@@ -63,6 +54,31 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        <!-- Llistat d'usuaris per mòbil -->
+        <div class="d-block d-md-none">
+            @forelse($users as $user)
+                <div class="custom-card mb-3">
+                    <div class="card-body-custom">
+                        <h5 class="mb-2"><i class="fas fa-user me-2"></i>{{ $user->name }}</h5>
+                        <p class="mb-1"><strong>Email:</strong> {{ $user->email }}</p>
+                        <p class="mb-2"><strong>ID:</strong> {{ $user->id }}</p>
+                        <div class="d-flex justify-content-end gap-2">
+                            <x-button color="warning" href="{{ route('users.manage.edit', $user->id) }}" class="btn-sm" data-qa="edit-user-mobile-{{ $user->id }}">
+                                <i class="fas fa-edit me-1"></i>Editar
+                            </x-button>
+                            <x-button color="danger" href="{{ route('users.manage.delete', $user->id) }}" class="btn-sm" data-qa="delete-user-mobile-{{ $user->id }}">
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar
+                            </x-button>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center text-muted my-4">
+                    <i class="fas fa-info-circle me-2"></i>No hi ha usuaris disponibles.
+                </div>
+            @endforelse
         </div>
 
         <!-- Paginació -->

@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Paleta de colors */
             --primary-color: #ff3e3e;
             --primary-hover: #ff5252;
             --secondary-color: #3a3a3a;
@@ -18,9 +19,51 @@
             --card-bg: #1e1e1e;
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
+
+            /* Escala tipogràfica */
+            --font-small: 0.75rem;
+            --font-base: 1rem;
+            --font-lg: 1.5rem;
+            --font-xl: 2rem;
+
             --border-radius: 12px;
             --transition-speed: 0.3s;
         }
+
+        /* Marges i padding universals */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: var(--font-base);
+        }
+
+        /* Superposició a modals i dropdowns */
+        .modal-backdrop,
+        .dropdown-menu {
+            z-index: 1050 !important;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .dropdown-menu {
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 10px;
+        }
+
+        /* Uniformitat en botons, inputs, i components */
+        button,
+        a.btn,
+        .form-control {
+            font-size: var(--font-base);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+        }
+
+
+
 
         /* Estils generals */
         body {
@@ -419,6 +462,55 @@
             color: var(--primary-hover);
         }
 
+        .custom-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Ombra per elevació */
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem !important;
+
+        }
+
+        .alert-success-custom {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-danger-custom {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-info-custom {
+            background-color: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .video-player {
@@ -476,6 +568,8 @@
                 display: flex;
                 justify-content: flex-end;
             }
+
+
         }
     </style>
 </head>
@@ -483,6 +577,8 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
+
+
         <a class="navbar-brand" href="{{ route('videos.index') }}">
             <i class="fas fa-play-circle"></i> VideosApp
         </a>
@@ -539,24 +635,53 @@
             </ul>
             <div class="d-flex">
                 @auth
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="logout-btn">
-                            <i class="fas fa-sign-out-alt me-1"></i> Tancar Sessió
+                    <div class="dropdown ms-3">
+                        <button class="btn btn-secondary-custom dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i> {{ Auth::user()->name }}
                         </button>
-                    </form>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="fas fa-user-circle me-2"></i> Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button class="dropdown-item text-danger" type="submit"><i class="fas fa-sign-out-alt me-2"></i> Tancar Sessió</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 @else
                     <a href="{{ route('login') }}" class="btn-primary-custom">
                         <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sessió
                     </a>
                 @endauth
             </div>
+
         </div>
     </div>
 </nav>
 
 <!-- Contingut principal -->
 <div class="main-container">
+    <div class="container mt-3">
+        @if(session('success'))
+            <div class="alert alert-success-custom" id="flash-message">
+                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger-custom" id="flash-message">
+                <i class="fas fa-exclamation-triangle me-2"></i> {{ session('error') }}
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div class="alert alert-info-custom" id="flash-message">
+                <i class="fas fa-info-circle me-2"></i> {{ session('info') }}
+            </div>
+        @endif
+    </div>
     {{ $slot }}
 </div>
 
@@ -570,5 +695,19 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flashes = document.querySelectorAll('#flash-message');
+        flashes.forEach(flash => {
+            setTimeout(() => {
+                flash.style.opacity = '0';
+                flash.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => flash.remove(), 500);
+            }, 4000);
+        });
+    });
+</script>
+
+
 </body>
 </html>

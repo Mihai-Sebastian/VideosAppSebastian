@@ -26,44 +26,27 @@
             </div>
         </form>
 
-        <!-- Taula de sèries -->
-        <div class="custom-card p-4">
-            <div class="table-responsive">
-                <table class="table table-hover text-center w-100" style="min-width: 600px;">
-                    <thead style="background: linear-gradient(45deg, var(--primary-color), var(--primary-hover)); color: white;">
-                    <tr>
-                        <th>Títol</th>
-                        <th>Descripció</th>
-                        <th>Data de Creació</th>
-                        <th>Accions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse ($series as $serie)
-                        <tr style="background-color: var(--card-bg); color: var(--text-primary); height: 70px;">
-                            <td class="align-middle">{{ $serie->title }}</td>
-                            <td class="align-middle">{{ $serie->description }}</td>
-                            <td class="align-middle">{{ $serie->getFormattedCreatedAtAttribute() }}</td>
-                            <td class="align-middle">
-                                <a href="{{ route('series.show', $serie->id) }}"
-                                   class="btn-primary-custom btn-sm"
-                                   style="border-radius: 20px; font-size: 14px;"
-                                   data-qa="button-view-details">
-                                    🔍 Veure Vídeos
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center text-muted py-4">
-                                <i class="fas fa-info-circle me-2"></i>No s'han trobat sèries.
-                            </td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <!-- Llista de targetes per a sèries -->
+        <div class="row g-4">
+            @forelse ($series as $serie)
+                <div class="col-12 col-md-6 col-lg-4">
+                    <x-card :title="$serie->title" icon="fas fa-film">
+                        <p><strong>Descripció:</strong> {{ $serie->description }}</p>
+                        <p><strong>Data:</strong> {{ $serie->getFormattedCreatedAtAttribute() }}</p>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('series.show', $serie->id) }}" class="btn-primary-custom btn-sm">
+                                🔍 Veure Vídeos
+                            </a>
+                        </div>
+                    </x-card>
+                </div>
+            @empty
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-info-circle me-2"></i>No s'han trobat sèries.
+                </div>
+            @endforelse
         </div>
+
 
         <!-- Paginació -->
         <div class="d-flex justify-content-center mt-4">

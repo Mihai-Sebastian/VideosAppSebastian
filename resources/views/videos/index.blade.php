@@ -3,81 +3,64 @@
         <h1>Vídeos Disponibles</h1>
 
         @if($videos->isNotEmpty())
-            <!-- Secció de vídeos destacats -->
-            <div class="videos-section">
-                <div class="videos-container">
-                    @foreach($videos as $video)
-                        <div class="video-card-wrapper">
-                            @php
-                                $urlParts = explode('/', parse_url($video->url, PHP_URL_PATH));
-                                $youtubeId = end($urlParts);
-                                $youtubeId = strtok($youtubeId, '?');
-                                $thumbnailUrl = $youtubeId ? "https://img.youtube.com/vi/{$youtubeId}/0.jpg" : asset('images/default-thumbnail.jpg');
-                            @endphp
+            <div class="row">
+                @foreach($videos as $video)
+                    @php
+                        $urlParts = explode('/', parse_url($video->url, PHP_URL_PATH));
+                        $youtubeId = end($urlParts);
+                        $youtubeId = strtok($youtubeId, '?');
+                        $thumbnailUrl = $youtubeId ? "https://img.youtube.com/vi/{$youtubeId}/0.jpg" : asset('images/default-thumbnail.jpg');
+                    @endphp
 
-                            <div class="video-card">
-                                <a href="{{ route('videos.show', $video->id) }}" class="video-thumbnail-link" data-qa="video-link-{{ $video->id }}">
-                                    <div class="video-thumbnail-container">
-                                        <img src="{{ $thumbnailUrl }}" alt="Miniatura: {{ $video->title }}" class="video-thumbnail">
-                                        <div class="video-duration">
-                                            <i class="fas fa-play"></i>
-                                        </div>
-                                    </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <x-card :title="$video->title" icon="fas fa-play" :image="$thumbnailUrl">
+                            <p><strong>Descripció:</strong> {{ $video->description }}</p>
+                            <p><strong>Data:</strong> {{ $video->formatted_published_at ?? 'Sense data' }}</p>
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <a href="{{ route('videos.show', $video->id) }}" class="btn-primary-custom btn-sm">
+                                    🔍 Veure Vídeo
                                 </a>
-                                <div class="video-info">
-                                    <h3 class="video-title">
-                                        <a href="{{ route('videos.show', $video->id) }}" data-qa="video-title-{{ $video->id }}">
-                                            {{ $video->title }}
-                                        </a>
-                                    </h3>
-                                    <div class="video-meta">
-                                        <span class="video-date">
-                                            <i class="fas fa-calendar-alt me-1"></i>{{ $video->formatted_published_at ?? 'Sense data' }}
-                                        </span>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        </x-card>
+                    </div>
+                @endforeach
             </div>
+
+            <!-- Paginador personalitzat -->
+            @if($videos->hasPages())
+                <div class="pagination-container">
+                    <nav aria-label="Paginació de vídeos">
+                        <ul class="custom-pagination">
+                            <!-- Botó "Anterior" -->
+                            <li class="page-item {{ $videos->onFirstPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $videos->previousPageUrl() }}" aria-label="Anterior">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+
+                            <!-- Números de pàgina -->
+                            @for ($i = 1; $i <= $videos->lastPage(); $i++)
+                                <li class="page-item {{ $videos->currentPage() == $i ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ $videos->url($i) }}">{{ $i }}</a>
+                                </li>
+                            @endfor
+
+                            <!-- Botó "Següent" -->
+                            <li class="page-item {{ $videos->hasMorePages() ? '' : 'disabled' }}">
+                                <a class="page-link" href="{{ $videos->nextPageUrl() }}" aria-label="Següent">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            @endif
         @else
-            <!-- Missatge en cas que no hi hagi vídeos disponibles -->
             <div class="empty-videos">
                 <div class="empty-icon">
                     <i class="fas fa-film"></i>
                 </div>
                 <p>No hi ha vídeos disponibles.</p>
-            </div>
-        @endif
-
-        <!-- Paginació -->
-        @if($videos->hasPages())
-            <div class="pagination-container">
-                <nav aria-label="Paginació de vídeos">
-                    <ul class="custom-pagination">
-                        <!-- Botó "Anterior" -->
-                        <li class="page-item {{ $videos->onFirstPage() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $videos->previousPageUrl() }}" aria-label="Anterior">
-                                <i class="fas fa-chevron-left"></i>
-                            </a>
-                        </li>
-
-                        <!-- Números de pàgina -->
-                        @for ($i = 1; $i <= $videos->lastPage(); $i++)
-                            <li class="page-item {{ $videos->currentPage() == $i ? 'active' : '' }}">
-                                <a class="page-link" href="{{ $videos->url($i) }}">{{ $i }}</a>
-                            </li>
-                        @endfor
-
-                        <!-- Botó "Següent" -->
-                        <li class="page-item {{ $videos->hasMorePages() ? '' : 'disabled' }}">
-                            <a class="page-link" href="{{ $videos->nextPageUrl() }}" aria-label="Següent">
-                                <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         @endif
 
@@ -87,108 +70,15 @@
                 <i class="fas fa-plus"></i>
             </a>
         @endauth
+
     </div>
 
     <style>
-        /* Estils per a la secció de vídeos */
-        .videos-section {
-            margin-bottom: 40px;
+        .row {
+            row-gap: 30px;
         }
 
-        .videos-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        /* Estils per a les targetes de vídeo */
-        .video-card-wrapper {
-            transition: transform var(--transition-speed) ease;
-        }
-
-        .video-card-wrapper:hover {
-            transform: translateY(-5px);
-        }
-
-        .video-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            height: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .video-thumbnail-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* Relació d'aspecte 16:9 */
-            overflow: hidden;
-        }
-
-        .video-thumbnail {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform var(--transition-speed) ease;
-        }
-
-        .video-thumbnail-link:hover .video-thumbnail {
-            transform: scale(1.05);
-        }
-
-        .video-duration {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .video-info {
-            padding: 15px;
-        }
-
-        .video-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .video-title a {
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: color var(--transition-speed) ease;
-        }
-
-        .video-title a:hover {
-            color: var(--primary-color);
-        }
-
-        .video-meta {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Estils per a la paginació */
+        /* Estils per al paginador */
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -234,7 +124,22 @@
             opacity: 0.5;
         }
 
-        /* Estil per al botó flotant */
+        .empty-videos {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
         .floating-action-button {
             position: fixed;
             bottom: 30px;
@@ -258,38 +163,6 @@
             box-shadow: 0 6px 25px rgba(255, 62, 62, 0.5);
             color: white;
             text-decoration: none;
-        }
-
-        /* Estil per a la secció buida */
-        .empty-videos {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .videos-container {
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-                gap: 15px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .videos-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
         }
     </style>
 </x-videos-app-layout>

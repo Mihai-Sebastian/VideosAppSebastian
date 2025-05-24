@@ -11,44 +11,31 @@
             </div>
         </form>
 
-        <!-- Taula d'usuaris -->
-        <div class="custom-card p-4 mt-4">
-            <div class="table-responsive">
-                <table class="table table-hover text-center w-100" style="min-width: 600px;">
-                    <thead style="background: linear-gradient(45deg, var(--primary-color), var(--primary-hover)); color: white;">
-                    <tr>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Accions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse ($users as $user)
-                        <tr style="background-color: var(--card-bg); color: var(--text-primary);">
-                            <td class="align-middle">{{ $user->name }}</td>
-                            <td class="align-middle">{{ $user->email }}</td>
-                            <td class="align-middle">
-                                @foreach ($user->roles as $role)
-                                    <span class="badge-custom">{{ ucfirst($role->name) }}</span>
-                                @endforeach
-                            </td>
-                            <td class="align-middle">
-                                <a href="{{ route('users.show', $user->id) }}" class="btn btn-primary-custom btn-sm" data-qa="button-view-details">
-                                    🔍 Veure Detalls
-                                </a>
-                            </td>
-                        </tr>
-                        <tr style="height: 6px;"></tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">No s'han trobat usuaris.</td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
+        <!-- Llista d'usuaris amb targetes -->
+        <div class="row">
+            @forelse ($users as $user)
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <x-card :title="$user->name" icon="fas fa-user">
+                        <p><strong>Email:</strong> {{ $user->email }}</p>
+                        <p><strong>Rol:</strong>
+                            @foreach ($user->roles as $role)
+                                <span class="badge-custom">{{ ucfirst($role->name) }}</span>
+                            @endforeach
+                        </p>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('users.show', $user->id) }}" class="btn-primary-custom btn-sm">
+                                🔍 Veure Detalls
+                            </a>
+                        </div>
+                    </x-card>
+                </div>
+            @empty
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-info-circle me-2"></i>No s'han trobat usuaris.
+                </div>
+            @endforelse
         </div>
+
 
         <!-- Paginació -->
         <div class="d-flex justify-content-center mt-4">
